@@ -96,24 +96,24 @@ $colors: map-merge((
 $default-color-opacity:      rgba(182, 182, 182, .6) !default;
 $orange-color:               #f96332 !default;
 
-$default:       #344675 !default;
-$primary:       #e14eca !default;
+$default:       #4A5759 !default;
+$primary:       #3DCD00 !default;
 $secondary:     #f4f5f7 !default;
-$success:       #00f2c3 !default;
-$info:          #1d8cf8 !default;
+$success:       #3DCD00 !default;
+$info:          #3DCD00 !default;
 $warning:       #ff8d72 !default;
-$danger:        #fd5d93 !default;
-$black:         #222a42 !default;
+$danger:        #BA1200 !default;
+$black:         #1e1e2f !default;
 
 
 // gradient
-$default-states:       #263148 !default;
-$primary-states:       #ba54f5 !default;
-$success-states:       #0098f0 !default;
-$info-states:          #3358f4 !default;
-$warning-states:       #ff6491 !default;
+$default-states:       #1e1e2f !default;
+$primary-states:       #4A5759 !default;
+$success-states:       #3DCD00 !default;
+$info-states:          #3DCD00  !default;
+$warning-states:       #FF8811 !default;
 $danger-states:        #ec250d !default;
-$black-states:         #1d253b !default;
+$black-states:         #1e1e2f !default;
 
 $background-black:           #1e1e2f !default;
 $background-states-black:    #1e1e24 !default;
@@ -134,7 +134,7 @@ $active-gray:                #777777 !default;
 $nav-gray:                   #444444 !default;
 $search-gray:                #b7b7b7 !default;
 $calendar-gray:              #9499a7 !default;
-$active-blue:                #00bbff !default;
+$active-blue:                #3DCD00 !default;
 
 
 
@@ -740,7 +740,7 @@ $navbar-nav-link-letter-spacing:    0 !default;
 $navbar-nav-link-border-radius:     $border-radius !default;
 
 /* navbar color */
-$navbar-color:                      #1a1e34 !default;
+$navbar-color:                      #1e1e2f !default;
 $navbar-dark-bg:                    transparent !default;
 $navbar-dark-hover-bg:              rgba(255, 255, 255, .1);
 $navbar-dark-active-bg:             rgba(255, 255, 255, .1);

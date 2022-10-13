@@ -42,7 +42,7 @@ let chart1_2_options = {
         barPercentage: 1.6,
         gridLines: {
           drawBorder: false,
-          color: "rgba(29,140,248,0.0)",
+          color: "rgba(61,205,0,0.0)",
           zeroLineColor: "transparent"
         },
         ticks: {
@@ -58,7 +58,7 @@ let chart1_2_options = {
         barPercentage: 1.6,
         gridLines: {
           drawBorder: false,
-          color: "rgba(29,140,248,0.1)",
+          color: "rgba(61,205,0,0,0.1)",
           zeroLineColor: "transparent"
         },
         ticks: {
@@ -79,9 +79,9 @@ let chartExample1 = {
 
     let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
 
-    gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)");
-    gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)");
-    gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
+    gradientStroke.addColorStop(1, "rgba(61,205,0,0.2)");
+    gradientStroke.addColorStop(0.4, "rgba(61,205,0,0.0)");
+    gradientStroke.addColorStop(0, "rgba(61,205,0,0)");  //green colors
 
     return {
       labels: [
@@ -103,13 +103,13 @@ let chartExample1 = {
           label: "My First dataset",
           fill: true,
           backgroundColor: gradientStroke,
-          borderColor: "#1f8ef1",
+          borderColor: "#3DCD00",
           borderWidth: 2,
           borderDash: [],
           borderDashOffset: 0.0,
-          pointBackgroundColor: "#1f8ef1",
+          pointBackgroundColor: "#3DCD00",
           pointBorderColor: "rgba(255,255,255,0)",
-          pointHoverBackgroundColor: "#1f8ef1",
+          pointHoverBackgroundColor: "#3DCD00",
           pointBorderWidth: 20,
           pointHoverRadius: 4,
           pointHoverBorderWidth: 15,
@@ -124,9 +124,9 @@ let chartExample1 = {
 
     let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
 
-    gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)");
-    gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)");
-    gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
+    gradientStroke.addColorStop(1, "rgba(61,205,0,0.2)");
+    gradientStroke.addColorStop(0.4, "rgba(61,205,0,0.0)");
+    gradientStroke.addColorStop(0, "rgba(61,205,0,0)"); //green colors
 
     return {
       labels: [
@@ -148,13 +148,13 @@ let chartExample1 = {
           label: "My First dataset",
           fill: true,
           backgroundColor: gradientStroke,
-          borderColor: "#1f8ef1",
+          borderColor: "#3DCD00",
           borderWidth: 2,
           borderDash: [],
           borderDashOffset: 0.0,
-          pointBackgroundColor: "#1f8ef1",
+          pointBackgroundColor: "#3DCD00",
           pointBorderColor: "rgba(255,255,255,0)",
-          pointHoverBackgroundColor: "#1f8ef1",
+          pointHoverBackgroundColor: "#3DCD00",
           pointBorderWidth: 20,
           pointHoverRadius: 4,
           pointHoverBorderWidth: 15,
@@ -169,9 +169,9 @@ let chartExample1 = {
 
     let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
 
-    gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)");
-    gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)");
-    gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
+    gradientStroke.addColorStop(1, "rgba(61,205,0,0.2)");
+    gradientStroke.addColorStop(0.4, "rgba(61,205,0,0.0)");
+    gradientStroke.addColorStop(0, "rgba(61,205,0,0)"); //green colors
 
     return {
       labels: [
@@ -193,13 +193,13 @@ let chartExample1 = {
           label: "My First dataset",
           fill: true,
           backgroundColor: gradientStroke,
-          borderColor: "#1f8ef1",
+          borderColor: "#3DCD00",
           borderWidth: 2,
           borderDash: [],
           borderDashOffset: 0.0,
-          pointBackgroundColor: "#1f8ef1",
+          pointBackgroundColor: "#3DCD00",
           pointBorderColor: "rgba(255,255,255,0)",
-          pointHoverBackgroundColor: "#1f8ef1",
+          pointHoverBackgroundColor: "#3DCD00",
           pointBorderWidth: 20,
           pointHoverRadius: 4,
           pointHoverBorderWidth: 15,
@@ -221,9 +221,9 @@ let chartExample2 = {
 
     let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
 
-    gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)");
-    gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)");
-    gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
+    gradientStroke.addColorStop(1, "rgba(61,205,0,0.2)");
+    gradientStroke.addColorStop(0.4, "rgba(61,205,0,0.0)");
+    gradientStroke.addColorStop(0, "rgba(61,205,0,0)"); //green colors
 
     return {
       labels: ["JUL", "AUG", "SEP", "OCT", "NOV", "DEC"],
@@ -232,13 +232,13 @@ let chartExample2 = {
           label: "Data",
           fill: true,
           backgroundColor: gradientStroke,
-          borderColor: "#1f8ef1",
+          borderColor: "#3DCD00",
           borderWidth: 2,
           borderDash: [],
           borderDashOffset: 0.0,
-          pointBackgroundColor: "#1f8ef1",
+          pointBackgroundColor: "#3DCD00",
           pointBorderColor: "rgba(255,255,255,0)",
-          pointHoverBackgroundColor: "#1f8ef1",
+          pointHoverBackgroundColor: "#3DCD00",
           pointBorderWidth: 20,
           pointHoverRadius: 4,
           pointHoverBorderWidth: 15,
@@ -260,9 +260,9 @@ let chartExample3 = {
 
     let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
 
-    gradientStroke.addColorStop(1, "rgba(72,72,176,0.1)");
-    gradientStroke.addColorStop(0.4, "rgba(72,72,176,0.0)");
-    gradientStroke.addColorStop(0, "rgba(119,52,169,0)"); //purple colors
+    gradientStroke.addColorStop(1, "rgba(61,205,0,0.2)");
+    gradientStroke.addColorStop(0.4, "rgba(61,205,0,0.0)");
+    gradientStroke.addColorStop(0, "rgba(61,205,0,0)"); //green colors
 
     return {
       labels: ["USA", "GER", "AUS", "UK", "RO", "BR"],
@@ -272,7 +272,7 @@ let chartExample3 = {
           fill: true,
           backgroundColor: gradientStroke,
           hoverBackgroundColor: gradientStroke,
-          borderColor: "#d048b6",
+          borderColor: "#3DCD00",
           borderWidth: 2,
           borderDash: [],
           borderDashOffset: 0.0,
@@ -339,9 +339,9 @@ const chartExample4 = {
 
     let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
 
-    gradientStroke.addColorStop(1, "rgba(66,134,121,0.15)");
-    gradientStroke.addColorStop(0.4, "rgba(66,134,121,0.0)"); //green colors
-    gradientStroke.addColorStop(0, "rgba(66,134,121,0)"); //green colors
+    gradientStroke.addColorStop(1, "rgba(61,205,0,0.2)");
+    gradientStroke.addColorStop(0.4, "rgba(61,205,0,0.0)");
+    gradientStroke.addColorStop(0, "rgba(61,205,0,0)"); //green colors
 
     return {
       labels: ["JUL", "AUG", "SEP", "OCT", "NOV"],
@@ -350,13 +350,13 @@ const chartExample4 = {
           label: "My First dataset",
           fill: true,
           backgroundColor: gradientStroke,
-          borderColor: "#00d6b4",
+          borderColor: "#3DCD00",
           borderWidth: 2,
           borderDash: [],
           borderDashOffset: 0.0,
-          pointBackgroundColor: "#00d6b4",
+          pointBackgroundColor: "#3DCD00",
           pointBorderColor: "rgba(255,255,255,0)",
-          pointHoverBackgroundColor: "#00d6b4",
+          pointHoverBackgroundColor: "#3DCD00",
           pointBorderWidth: 20,
           pointHoverRadius: 4,
           pointHoverBorderWidth: 15,
