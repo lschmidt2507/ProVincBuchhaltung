@@ -23,6 +23,7 @@ import Rtl from "views/Rtl.js";
 import TableList from "views/TableList.js";
 import Typography from "views/Typography.js";
 import UserProfile from "views/UserProfile.js";
+import Weeks from "views/weeks.js";
 
 var routes = [
   {
@@ -42,11 +43,11 @@ var routes = [
     layout: "/admin"
   },
   {
-    path: "/map",
-    name: "Map",
+    path: "/ weeks",
+    name: "Wochenstatistiken",
     rtlName: "خرائط",
-    icon: "tim-icons icon-pin",
-    component: Map,
+    icon: "tim-icons icon-components",
+    component: Weeks,
     layout: "/admin"
   },
   {
@@ -88,6 +89,6 @@ var routes = [
     icon: "tim-icons icon-world",
     component: Rtl,
     layout: "/rtl"
-  }
+  },
 ];
 export default routes;
