@@ -1,8 +1,20 @@
 import React from "react"
 import { Button, Card, CardBody, CardHeader, CardTitle, Col, Row, Table } from "reactstrap"
 import newWeek from "./newWeek.js"
+import { useHistory } from "react-router-dom"
+import { Redirect } from "react-router-dom"
 
-export default function weeks(){
+
+
+export default function Weeks(){
+
+    const history = useHistory();
+
+    function pushToNewWeek(){
+        console.log("Try to push");
+        history.push("/admin/newWeek")
+    }
+
     return (
         <div className="content">
             <Card className="headerCart">
@@ -17,7 +29,7 @@ export default function weeks(){
                     <CardTitle tag="h3">Historie</CardTitle>
                     </Col>
                     <Col>
-                    <Button color="#6dcc4e">+</Button>
+                    <Button onClick={pushToNewWeek}>+</Button>
                     </Col>
                     </Row>
                 </CardHeader>

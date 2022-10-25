@@ -14,9 +14,10 @@
     "prop-types": "15.8.1",
     "react": ">=16.8.0",
     "react-chartjs-2": "3.0.4",
+    "react-datepicker": "^4.8.0",
     "react-dom": ">=16.8.0",
     "react-notification-alert": "0.0.13",
-    "react-router-dom": "5.2.0",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "5.0.1",
     "reactstrap": "8.7.1",
     "sass": "1.53.0"

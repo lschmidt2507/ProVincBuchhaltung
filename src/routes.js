@@ -24,6 +24,7 @@ import TableList from "views/TableList.js";
 import Typography from "views/Typography.js";
 import UserProfile from "views/UserProfile.js";
 import Weeks from "views/weeks.js";
+import NewWeek from "views/newWeek.js";
 
 var routes = [
   {
@@ -43,7 +44,7 @@ var routes = [
     layout: "/admin"
   },
   {
-    path: "/ weeks",
+    path: "/weeks",
     name: "Wochenstatistiken",
     rtlName: "خرائط",
     icon: "tim-icons icon-components",
@@ -90,5 +91,12 @@ var routes = [
     component: Rtl,
     layout: "/rtl"
   },
+  {
+    path: "/newWeek",
+    name: "Neue Wochenstatistik",
+    component: NewWeek,
+    layout: "/admin",
+    showInSideBar: false
+  }
 ];
 export default routes;
