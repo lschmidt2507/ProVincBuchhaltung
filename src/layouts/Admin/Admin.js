@@ -93,6 +93,7 @@ function Admin(props) {
       }
     });
   };
+
   const getBrandText = (path) => {
     for (let i = 0; i < routes.length; i++) {
       if (location.pathname.indexOf(routes[i].layout + routes[i].path) !== -1) {

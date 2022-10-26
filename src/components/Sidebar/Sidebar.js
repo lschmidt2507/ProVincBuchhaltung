@@ -58,6 +58,8 @@ function Sidebar(props) {
     document.documentElement.classList.remove("nav-open");
   };
   const { routes, rtlActive, logo } = props;
+  // remove routes to not show on sidebar HERE
+  const routesToShow = routes.slice(0,8)
   let logoImg = null;
   let logoText = null;
   if (logo !== undefined) {
@@ -119,7 +121,7 @@ function Sidebar(props) {
               </div>
             ) : null}
             <Nav>
-              {routes.map((prop, key) => {
+              {routesToShow.map((prop, key) => {
                 if (prop.redirect) return null;
                 return (
                   <li
