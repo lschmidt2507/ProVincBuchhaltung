@@ -35,9 +35,7 @@ export default function NewWeek(){
                         </Col>
                     </Row>
                 </CardHeader>
-                
                 <CardBody>
-                {"\n"}{"\n"}
                     <h2>Warenbestand</h2>
                     <Table className="inputTable">
                         <thead>

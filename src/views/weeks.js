@@ -4,6 +4,8 @@ import newWeek from "./newWeek.js"
 import { useHistory } from "react-router-dom"
 import { Redirect } from "react-router-dom"
 
+import weekStatsTest from "../testData/weekStatsTestData.json"
+
 
 
 export default function Weeks(){
@@ -15,21 +17,31 @@ export default function Weeks(){
         history.push("/admin/newWeek")
     }
 
+    function rejetcCheckboxChange(e){
+        e.preventDefault();
+        return false;
+    }
+
     return (
         <div className="content">
             <Card className="headerCart">
                 <CardHeader>
-                        <CardTitle tag="h1">Wochenstatistiken</CardTitle>
+                    <Row>
+                        <Col>
+                            <CardTitle tag="h1">Wochenstatistiken</CardTitle>
+                        </Col>
+                        <Col>letzte vor X Tagen</Col>
+                    </Row>
                 </CardHeader>
             </Card>
             <Card className="weeksTableCard">
                 <CardHeader>
                     <Row>
-                    <Col>
+                    <Col md="auto">
                     <CardTitle tag="h3">Historie</CardTitle>
                     </Col>
-                    <Col>
-                    <Button onClick={pushToNewWeek}>+</Button>
+                    <Col md="auto">
+                    <Button onClick={pushToNewWeek}>Neue Wochenstatistik</Button>
                     </Col>
                     </Row>
                 </CardHeader>
@@ -40,20 +52,29 @@ export default function Weeks(){
                                 <th>Beginn</th>
                                 <th>Ende</th>
                                 <th>Umsatz</th>
-                                <th>Ausgaben</th>
                                 <th>Verlust</th>
-                                <th>Gewinn</th>
+                                <th>Gewinn soll</th>
+                                <th>Differenz zu Kasse</th>
+                                <th>Gewinn ist</th>
+                                <th>Normal</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <th>DD.MM.YYYY</th>
-                                <th>DD.MM.YYYY (x Tage)</th>
-                                <th>500</th>
-                                <th>400</th>
-                                <th>20</th>
-                                <th>80</th>
-                            </tr>
+                            {weekStatsTest.map((week, index) =>{
+                                return <tr key={index}>
+                                    <td>{(week["datestart"])}</td>
+                                    <td>{(week["dateend"])}</td>
+                                    <td>{parseFloat(week["sales"]).toFixed(2)}</td>
+                                    <td>{parseFloat(week["losses"]).toFixed(2)}</td>
+                                    <td>{parseFloat(week["profit_hyp"]).toFixed(2)}</td>
+                                    <td>{parseFloat(week["difference"]).toFixed(2)}</td>
+                                    <td>{parseFloat(week["profit_act"]).toFixed(2)}</td>
+                                    <td><input type="checkbox" defaultChecked={week["was_regular"]} onClick={rejetcCheckboxChange}/></td>
+                                    <td><Button>
+                                    <i className="tim-icons icon-pencil" />
+                                        </Button></td>
+                                </tr>
+                            })}
                         </tbody>
                     </Table>    
                 </CardBody>
