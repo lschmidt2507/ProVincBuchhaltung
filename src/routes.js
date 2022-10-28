@@ -33,7 +33,8 @@ var routes = [
     rtlName: "لوحة القيادة",
     icon: "tim-icons icon-chart-pie-36",
     component: Dashboard,
-    layout: "/admin"
+    layout: "/admin",
+    showInSideBar: true
   },
   {
     path: "/icons",
@@ -41,7 +42,8 @@ var routes = [
     rtlName: "الرموز",
     icon: "tim-icons icon-atom",
     component: Icons,
-    layout: "/admin"
+    layout: "/admin",
+    showInSideBar: true
   },
   {
     path: "/weeks",
@@ -49,7 +51,8 @@ var routes = [
     rtlName: "خرائط",
     icon: "tim-icons icon-components",
     component: Weeks,
-    layout: "/admin"
+    layout: "/admin",
+    showInSideBar: true
   },
   {
     path: "/notifications",
@@ -57,7 +60,8 @@ var routes = [
     rtlName: "إخطارات",
     icon: "tim-icons icon-bell-55",
     component: Notifications,
-    layout: "/admin"
+    layout: "/admin",
+    showInSideBar: false
   },
   {
     path: "/user-profile",
@@ -65,7 +69,8 @@ var routes = [
     rtlName: "ملف تعريفي للمستخدم",
     icon: "tim-icons icon-single-02",
     component: UserProfile,
-    layout: "/admin"
+    layout: "/admin",
+    showInSideBar: true
   },
   {
     path: "/tables",
@@ -73,7 +78,8 @@ var routes = [
     rtlName: "قائمة الجدول",
     icon: "tim-icons icon-puzzle-10",
     component: TableList,
-    layout: "/admin"
+    layout: "/admin",
+    showInSideBar: false
   },
   {
     path: "/typography",
@@ -81,7 +87,8 @@ var routes = [
     rtlName: "طباعة",
     icon: "tim-icons icon-align-center",
     component: Typography,
-    layout: "/admin"
+    layout: "/admin",
+    showInSideBar: true
   },
   {
     path: "/rtl-support",
@@ -89,7 +96,8 @@ var routes = [
     rtlName: "ار تي ال",
     icon: "tim-icons icon-world",
     component: Rtl,
-    layout: "/rtl"
+    layout: "/rtl",
+    showInSideBar: false
   },
   {
     path: "/newWeek",

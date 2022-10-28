@@ -59,7 +59,9 @@ function Sidebar(props) {
   };
   const { routes, rtlActive, logo } = props;
   // remove routes to not show on sidebar HERE
-  const routesToShow = routes.slice(0,8)
+  const routesToShow = routes.filter(route => route["showInSideBar"] === true)
+  console.log(routesToShow)
+  //const routesToShow = routes.slice(0,8)
   let logoImg = null;
   let logoText = null;
   if (logo !== undefined) {
