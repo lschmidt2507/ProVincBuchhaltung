@@ -17,7 +17,7 @@
 */
 /*eslint-disable*/
 import React from "react";
-import { NavLink, Link, useLocation } from "react-router-dom";
+import { NavLink, Link, useLocation, useHistory } from "react-router-dom";
 // nodejs library to set properties for components
 import { PropTypes } from "prop-types";
 
@@ -30,10 +30,23 @@ import {
   BackgroundColorContext,
   backgroundColors
 } from "contexts/BackgroundColorContext";
+import axios from "axios";
+
+const axiosConfig = {
+  headers: {
+  'content-Type': 'application/json',
+  "Accept": "/",
+  "Cache-Control": "no-cache",
+  "Cookie": document.cookie
+  },
+  credentials: "same-origin"
+  };
+axios.defaults.withCredentials = true;
 
 var ps;
 
 function Sidebar(props) {
+  const history = useHistory();
   const location = useLocation();
   const sidebarRef = React.useRef(null);
   // verifies if routeName is the one active (in browser input)
@@ -60,8 +73,26 @@ function Sidebar(props) {
   const { routes, rtlActive, logo } = props;
   // remove routes to not show on sidebar HERE
   const routesToShow = routes.filter(route => route["showInSideBar"] === true)
-  console.log(routesToShow)
-  //const routesToShow = routes.slice(0,8)
+
+  async function checkAuth(){
+  try{
+    var jwt = localStorage.getItem('jwt')
+    const response = await axios.post("http://178.254.2.54:5000/api/auth/test", {jwt})
+    console.log('resp:' + response)
+    const js = await response.data;
+    console.log("data :" + js)
+    if(JSON.stringify(js["message"]) === "Kein Token gefudnen, bitte einloggen!"){
+      history.push("/login")
+    }
+  }catch(error){
+      console.log("Error:" + error)
+      history.push("/login")
+      return error
+  }finally{
+    console.log("Successfully authorized")
+  }
+  }
+
   let logoImg = null;
   let logoText = null;
   if (logo !== undefined) {
@@ -136,7 +167,7 @@ function Sidebar(props) {
                       to={prop.layout + prop.path}
                       className="nav-link"
                       activeClassName="active"
-                      onClick={props.toggleSidebar}
+                      onClick={function (){props.toggleSidebar; checkAuth();}}
                     >
                       <i className={prop.icon} />
                       <p>{rtlActive ? prop.rtlName : prop.name}</p>

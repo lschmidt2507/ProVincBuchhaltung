@@ -1,9 +1,9 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { Button, Card, CardBody, CardHeader, CardTitle, Col, Row, Table } from "reactstrap"
 import newWeek from "./newWeek.js"
 import { useHistory } from "react-router-dom"
 import { Redirect } from "react-router-dom"
-
+import axios from "axios"
 import weekStatsTest from "../testData/weekStatsTestData.json"
 
 
@@ -11,6 +11,20 @@ import weekStatsTest from "../testData/weekStatsTestData.json"
 export default function Weeks(){
 
     const history = useHistory();
+    const [data, setData] = useState([]);
+    
+    const getLastWeeks = async () => {
+        const jwt = localStorage.getItem("jwt")
+        const response = await axios.post("http://178.254.2.54:5000/api/ws/all", {jwt})
+        const js = JSON.stringify(await response.data);
+        console.log('Weeks: ' + js)
+        setData(js)
+    }
+
+    useEffect(() => {
+        console.log('useEffect')
+        getLastWeeks();
+    }, []);
 
     function pushToNewWeek(){
         console.log("Try to push");
@@ -21,6 +35,8 @@ export default function Weeks(){
         e.preventDefault();
         return false;
     }
+
+    var weeksData = localStorage.getItem('data')
 
     return (
         <div className="content">
@@ -60,7 +76,7 @@ export default function Weeks(){
                             </tr>
                         </thead>
                         <tbody>
-                            {weekStatsTest.map((week, index) =>{
+                            {weeksData.map((week, index) =>{
                                 return <tr key={index}>
                                     <td>{(week["datestart"])}</td>
                                     <td>{(week["dateend"])}</td>

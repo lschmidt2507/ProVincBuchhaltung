@@ -25,6 +25,7 @@ import Typography from "views/Typography.js";
 import UserProfile from "views/UserProfile.js";
 import Weeks from "views/weeks.js";
 import NewWeek from "views/newWeek.js";
+import Login from "views/LoginPage.js";
 
 var routes = [
   {
@@ -104,6 +105,12 @@ var routes = [
     name: "Neue Wochenstatistik",
     component: NewWeek,
     layout: "/admin",
+    showInSideBar: false
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: Login,
     showInSideBar: false
   }
 ];

@@ -20,13 +20,13 @@ export default function NewWeek(){
                 Zurück
             </Button>
             <Card className="newWeekCard">
-                <CardHeader>
-                    <CardTitle tag="h1">Neue Wochenstatistik</CardTitle>
-                    <Row>
+                <CardHeader tag="h1">Neue Wochenstatistik</CardHeader>
+                <CardBody>
+                <Row>
                         <Col>Beginn</Col>
                         <Col>Ende</Col>
                     </Row>
-                    <Row>
+                <Row>
                         <Col>
                             <DatePicker selected={startDate} onChange={(date:Date) => setStartDate(date)} />
                         </Col>
@@ -34,29 +34,41 @@ export default function NewWeek(){
                             <DatePicker selected={startDate} onChange={(date:Date) => setStartDate(date)} />
                         </Col>
                     </Row>
+                </CardBody>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle tag="h2">Warenbestand</CardTitle>
+                    </CardHeader>
+                    <CardBody>
+                        <Table className="inputTable">
+                            <thead>
+                                <tr>
+                                    <th>Artikel</th>
+                                    <th>Bestand vorher</th>
+                                    <th>Bestand nachher</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>Spacekekse</th>
+                                    <th>
+                                        <Input type="number"/>
+                                    </th>
+                                    <th>
+                                        <Input type="number"/>
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </Table>
+                    </CardBody>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle tag="h2">Kassenzählung</CardTitle>
                 </CardHeader>
                 <CardBody>
-                    <h2>Warenbestand</h2>
-                    <Table className="inputTable">
-                        <thead>
-                            <tr>
-                                <th>Artikel</th>
-                                <th>Bestand vorher</th>
-                                <th>Bestand nachher</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th>Spacekekse</th>
-                                <th>
-                                    <Input type="number"/>
-                                </th>
-                                <th>
-                                    <Input type="number"/>
-                                </th>
-                            </tr>
-                        </tbody>
-                    </Table>
+
                 </CardBody>
             </Card>
             
