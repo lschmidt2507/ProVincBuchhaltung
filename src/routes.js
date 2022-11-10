@@ -26,6 +26,8 @@ import UserProfile from "views/UserProfile.js";
 import Weeks from "views/weeks.js";
 import NewWeek from "views/newWeek.js";
 import Login from "views/LoginPage.js";
+import Deliveries from "./views/Deliveries";
+import WeekStatDetailS from "./views/WeekStatDetails";
 
 var routes = [
   {
@@ -108,9 +110,18 @@ var routes = [
     showInSideBar: false
   },
   {
-    path: "/login",
-    name: "Login",
-    component: Login,
+    path: "/deliveries",
+    name: "Wareneingänge",
+    icon: "tim-icons icon-delivery-fast",
+    component: Deliveries,
+    layout: "/admin",
+    showInSideBar: true
+  },
+  {
+    path: "/week",
+    name: "Wochenstatistik",
+    component: WeekStatDetailS,
+    layout: "/admin",
     showInSideBar: false
   }
 ];

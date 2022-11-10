@@ -32,17 +32,6 @@ import {
 } from "contexts/BackgroundColorContext";
 import axios from "axios";
 
-const axiosConfig = {
-  headers: {
-  'content-Type': 'application/json',
-  "Accept": "/",
-  "Cache-Control": "no-cache",
-  "Cookie": document.cookie
-  },
-  credentials: "same-origin"
-  };
-axios.defaults.withCredentials = true;
-
 var ps;
 
 function Sidebar(props) {
@@ -78,12 +67,7 @@ function Sidebar(props) {
   try{
     var jwt = localStorage.getItem('jwt')
     const response = await axios.post("http://178.254.2.54:5000/api/auth/test", {jwt})
-    console.log('resp:' + response)
     const js = await response.data;
-    console.log("data :" + js)
-    if(JSON.stringify(js["message"]) === "Kein Token gefudnen, bitte einloggen!"){
-      history.push("/login")
-    }
   }catch(error){
       console.log("Error:" + error)
       history.push("/login")

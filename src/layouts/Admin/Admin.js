@@ -15,7 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React from "react";
+import React, { useState } from "react";
 import { Route, Switch, Redirect, useLocation } from "react-router-dom";
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar";
@@ -136,6 +136,14 @@ function Admin(props) {
       )}
     </BackgroundColorContext.Consumer>
   );
+}
+
+const Navbar = ()=>{
+  const [hide, setHide]=useState(false)
+  let path = useLocation();
+  if (path.pathname == '/patient/request_appointment' || path.pathname == ' /patient/virtualwaiting_room'){
+     setHide(true)
+}
 }
 
 export default Admin;
