@@ -18,12 +18,8 @@ export default function Weeks(){
 
     const pushToDetail = async (id) => {
         console.log("ID: " + id)
-        history.push({
-            pathname : '/admin/week',
-            state :{
-            week_id : id
-            }
-        });
+        localStorage.setItem("week_id", id)
+        history.push('/admin/week');
     }
 
     const getLastWeeks = async () => {
@@ -65,6 +61,14 @@ export default function Weeks(){
         }
     }
 
+    function returnColor(value){
+        if (value < 0) {
+            return "red"
+        }else {
+            return "green"
+        }
+    }
+
     function returnWeeksTable(){
         const weeks = weekStats || [];
         return weeks.map(week =>{
@@ -75,8 +79,14 @@ export default function Weeks(){
                     <td>{parseFloat(week["sales_act"]).toFixed(2)}</td>
                     <td>{parseFloat(week["losses"]).toFixed(2)}</td>
                     <td>{parseFloat(week["profit_hyp"]).toFixed(2)}</td>
-                    <td>{parseFloat(week["difference"]).toFixed(2)}</td>
-                    <td>{parseFloat(week["profit_act"]).toFixed(2)}</td>
+                    <td><div style={{color: returnColor(parseFloat(week["difference"]))}}>
+                        {parseFloat(week["difference"]).toFixed(2)}
+                        </div>
+                        </td>
+                    <td><div style={{color: returnColor(parseFloat(week["profit_act"]))}}>
+                        {parseFloat(week["profit_act"]).toFixed(2)}
+                        </div>
+                        </td>
                     <td><input type="checkbox" defaultChecked={week["was_regular"]} onClick={rejetcCheckboxChange}/></td>
                     <td>
                         <Button onClick={() => pushToDetail(week["id"])}>
