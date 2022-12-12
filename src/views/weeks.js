@@ -76,15 +76,15 @@ export default function Weeks(){
                 <tr key={week["id"]}>
                     <td><Moment format="dd DD.MM.YYYY">{week["date_start"]}</Moment></td>
                     <td><Moment format="dd DD.MM.YYYY">{week["date_end"]}</Moment></td>
-                    <td>{parseFloat(week["sales_act"]).toFixed(2)}</td>
-                    <td>{parseFloat(week["losses"]).toFixed(2)}</td>
-                    <td>{parseFloat(week["profit_hyp"]).toFixed(2)}</td>
+                    <td>{parseFloat(week["sales_act"]).toFixed(2)} €</td>
+                    <td>{parseFloat(week["losses"]).toFixed(2)} €</td>
+                    <td>{parseFloat(week["profit_hyp"]).toFixed(2)} €</td>
                     <td><div style={{color: returnColor(parseFloat(week["difference"]))}}>
-                        {parseFloat(week["difference"]).toFixed(2)}
+                        {parseFloat(week["difference"]).toFixed(2)} €
                         </div>
                         </td>
                     <td><div style={{color: returnColor(parseFloat(week["profit_act"]))}}>
-                        {parseFloat(week["profit_act"]).toFixed(2)}
+                        {parseFloat(week["profit_act"]).toFixed(2)} €
                         </div>
                         </td>
                     <td><input type="checkbox" defaultChecked={week["was_regular"]} onClick={rejetcCheckboxChange}/></td>
@@ -93,9 +93,6 @@ export default function Weeks(){
                             <i className="tim-icons icon-notes" />
                         </Button>
                     </td>
-                    <td><Button>
-                    <i className="tim-icons icon-pencil" />
-                        </Button></td>
                 </tr>
             );
         });
