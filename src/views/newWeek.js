@@ -7,6 +7,7 @@ import {addDays, parseISO} from "date-fns";
 import axios from "axios";
 import Moment from "react-moment";
 import { exact } from "prop-types";
+import { da } from "date-fns/locale";
 //import differenceInCalendarISOYears from 'date-fns/differenceInCalendarISOYears'
 
 export default function NewWeek(){
@@ -14,9 +15,12 @@ export default function NewWeek(){
     const history = useHistory();
     const [lastWeek, setLastWeek] = useState([])
     const [weekJSON, setWeekJSON] = useState([])
+    const [unassignedSupply, setUnassignedSupply] = useState([])
+    const [supplyToAdd, setSupplyToAdd] = useState([])
     var [profHyp, setProfHyp] = useState()
     var [sales_act, setSalesAct] = useState()
     const jwt = localStorage.getItem("jwt")
+
 
 
 
@@ -36,6 +40,12 @@ export default function NewWeek(){
         const js_parsed = js2
         console.log("Return: " + js_parsed)
         return js_parsed
+    }
+
+    const getSupplyData = async() =>{
+        const response = await axios.post("http://178.254.2.54:5000/api/supply/unassigned", {jwt})
+        const js = await response.data;
+        return js
     }
 
     useEffect(() => {
@@ -60,6 +70,9 @@ export default function NewWeek(){
 
             setWeekJSON(js_clone)
 
+            const supRes = await getSupplyData()
+            setUnassignedSupply(supRes)
+
             console.log("week after set:" + JSON.stringify(weekJSON))
 
         }
@@ -78,10 +91,10 @@ export default function NewWeek(){
             return(
                 <Row key="dateRow">
                     <Col>
-                        <Moment format="dd DD.MM.YYYY">{start_date}</Moment>
+                        <DatePicker selected={start_date} dateFormat="dd.MM.yyyy" onChange={date => updateDate("date_start", date)}></DatePicker>
                     </Col>
                     <Col>
-                        <DatePicker selected={end_date} dateFormat="dd.MM.yyyy"></DatePicker>
+                        <DatePicker selected={end_date} dateFormat="dd.MM.yyyy" onChange={date => updateDate("date_end", date)}></DatePicker>
                     </Col>
                 </Row>
             )
@@ -102,6 +115,31 @@ export default function NewWeek(){
 
         setWeekJSON(newJS)
         
+    }
+
+    function updateDate(type, date){
+        let newJS = Object.create(weekJSON)
+        var updatedSupplyToAdd = new Object();
+        updatedSupplyToAdd = {}
+        try{
+            newJS.week_stat[type] = date
+
+            
+            const supplies = unassignedSupply
+            supplies.map(supply => {
+                const date = Date.parse(supply.supplyDate)
+                if(weekJSON.week_stat.date_start < date && weekJSON.week_stat.date_end >= date){
+                    var toAddBefore = supplyToAdd[supply.product_id] || 0
+                    updatedSupplyToAdd[supply.product_id] = toAddBefore + supply.amount
+                }
+            });
+
+        }catch{
+
+        }
+        setSupplyToAdd(updatedSupplyToAdd)
+        console.log("Supply to add updatet: " + JSON.stringify(supplyToAdd) + " " + updatedSupplyToAdd)
+        setWeekJSON(newJS)
     }
 
 
@@ -144,6 +182,7 @@ export default function NewWeek(){
 
 
     function productTable(){
+        console.log("Supply to add: " + JSON.stringify(supplyToAdd))
         const products = weekJSON["products"]|| []
         return products.map(product => {
 
@@ -156,6 +195,7 @@ export default function NewWeek(){
                 <tr key={product["id"]}>
                     <td>{product["name"]}</td>
                     <td>{product["stock_before"] || 0}</td>
+                    <td>{supplyToAdd[product["product_id"]]}</td>
                     <td><input type="number" defaultValue={product["stock_before"]} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "stock_after", e.target.value)}/></td>
                     <td><input type="number" defaultValue={0} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "loss", e.target.value)}/></td>
                     <td>{pcs_sold}</td>
@@ -215,25 +255,24 @@ export default function NewWeek(){
         }
     }
 
-    function returnSingleRow(product){
-        const pcs_sold = product["stock_before"] - product["stock_after"] - product["loss"]
-            const sales = pcs_sold * product["sp"]
-            const profit = sales - (pcs_sold * product["pp"])
-
-            return(
-                <tr key={product["id"]}>
-                    <td>{product["name"]}</td>
-                    <td>{product["stock_before"] || 0}</td>
-                    <td><input type="number" defaultValue={0} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "stock_after", e.target.value)}/></td>
-                    <td><input type="number" defaultValue={0} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "loss", e.target.value)}/></td>
-                    <td>{pcs_sold}</td>
-                    <td><input type="number" defaultValue={parseFloat(product["pp"].toFixed(3))} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "pp", e.target.value)}/></td>
-                    <td><input type="number" defaultValue={parseFloat(product["sp"].toFixed(3))} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "sp", e.target.value)}/></td>
-                    <td>{parseFloat(sales).toFixed(2)}</td>
-                    <td>{parseFloat(profit).toFixed(2)}</td>
-                </tr>
-        );
+   function returnSupplyTable(){
+    const supplies = unassignedSupply.supplies || []
+    
+    return supplies.map(supply => {
+        const date = Date.parse(supply.supplyDate)
+        if(weekJSON.week_stat.date_start < date && weekJSON.week_stat.date_end >= date){
+        
+        return(
+            <tr>
+                <th>{supply.product_id}</th>
+                <th>{supply.amount}</th>
+                <th><Moment format="dd DD.MM.YYYY">{supply.supplyDate}</Moment></th>
+                <th>{supply.author}</th>
+            </tr>
+        )
     }
+    })
+   }
 
 
 
@@ -254,6 +293,24 @@ export default function NewWeek(){
                 </CardBody>
                 </Card>
                 <Card>
+                    <CardHeader tag="h1">Wareneingänge</CardHeader>
+                    <CardBody>
+                        <Table>
+                            <thead>
+                                <tr>
+                                <th>Artikel</th>
+                                <th>Anzahl</th>
+                                <th>Eingangsdatum</th>
+                                <th>geprüft durch</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {returnSupplyTable()}
+                            </tbody>
+                        </Table>
+                    </CardBody>
+                </Card>
+                <Card>
                     <CardHeader>
                         <CardTitle tag="h2">Warenbestand</CardTitle>
                     </CardHeader>
@@ -263,6 +320,7 @@ export default function NewWeek(){
                                 <tr>
                                     <th>Artikel</th>
                                     <th>Bestand vorher</th>
+                                    <th>Wareneingang</th>
                                     <th>Bestand nachher</th>
                                     <th>Verlust</th>
                                     <th>Verkauft</th>
@@ -276,7 +334,7 @@ export default function NewWeek(){
                                 {productTable()}
                             </tbody>
                         </Table>
-                        <Row tag="h4">
+                        <Row tag="h3">
                             <Col>Gesamter erwarteter Kassenstand:</Col>
                             <Col style={{textAlign:"right"}}>{parseFloat(sales_act || 0).toFixed(2)}</Col>
                         </Row>
