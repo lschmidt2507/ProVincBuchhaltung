@@ -72,6 +72,7 @@ export default function NewWeek(){
 
             const supRes = await getSupplyData()
             setUnassignedSupply(supRes)
+            updateValue(0,0,0,)
 
             console.log("week after set:" + JSON.stringify(weekJSON))
 
@@ -120,7 +121,7 @@ export default function NewWeek(){
     function updateDate(type, date){
         let newJS = Object.create(weekJSON)
         var updatedSupplyToAdd = new Object();
-        updatedSupplyToAdd = {}
+        updatedSupplyToAdd = []
         try{
             newJS.week_stat[type] = date
 
@@ -137,14 +138,22 @@ export default function NewWeek(){
         }catch{
 
         }
+        updatedSupplyToAdd.map(s => {
+            console.log("in array before: " + s)
+        })
         setSupplyToAdd(updatedSupplyToAdd)
         console.log("Supply to add updatet: " + JSON.stringify(supplyToAdd) + " " + updatedSupplyToAdd)
+        const test = supplyToAdd
+        test.map(supply => {
+            console.log("In supply: " + supply)
+        })
         setWeekJSON(newJS)
     }
 
 
     function updateValue(id, name, value){
         console.log(id, name, value)
+        var supplies = unassignedSupply.supplies
         let newJS = Object.create(weekJSON)
         var profges = 0
         var salesges = 0
@@ -156,12 +165,22 @@ export default function NewWeek(){
                 product[name] = value
 
             }
+            var supplyCount = 0
+            supplies.map(s => {
+                if (s.product_id === product.product_id){
+                    const date = Date.parse(s.supplyDate)
+                    if(weekJSON.week_stat.date_start < date && weekJSON.week_stat.date_end >= date){
+                        supplyCount += s.amount
+                    }
+                }
+            })
 
-            const pcs_sold = product["stock_before"] - product["stock_after"] - product["loss"]
+            const pcs_sold = product["stock_before"] + supplyCount - product["stock_after"] - product["loss"]
             const sales = pcs_sold * product["sp"]
             salesges += sales
             const profit = sales - (pcs_sold * product["pp"]) - (product["loss"] * product["pp"])
             profges+= profit
+            
 
         })
         setWeekJSON(newJS)
@@ -184,9 +203,19 @@ export default function NewWeek(){
     function productTable(){
         console.log("Supply to add: " + JSON.stringify(supplyToAdd))
         const products = weekJSON["products"]|| []
+        const supplies = unassignedSupply.supplies || []
         return products.map(product => {
 
-            const pcs_sold = product["stock_before"] - product["stock_after"] - product["loss"]
+            var supplyCount = 0
+            supplies.map(s => {
+                if (s.product_id === product.product_id){
+                    const date = Date.parse(s.supplyDate)
+                    if(weekJSON.week_stat.date_start < date && weekJSON.week_stat.date_end >= date){
+                        supplyCount += s.amount
+                    }
+                }
+            })
+            const pcs_sold = product["stock_before"] + supplyCount - product["stock_after"] - product["loss"]
             const sales = pcs_sold * product["sp"]
             const profit = sales - (pcs_sold * product["pp"]) - (product["loss"] * product["pp"])
             console.log("Profit: " + profit + product.name)   
@@ -195,7 +224,7 @@ export default function NewWeek(){
                 <tr key={product["id"]}>
                     <td>{product["name"]}</td>
                     <td>{product["stock_before"] || 0}</td>
-                    <td>{supplyToAdd[product["product_id"]]}</td>
+                    <td>{supplyCount}</td>
                     <td><input type="number" defaultValue={product["stock_before"]} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "stock_after", e.target.value)}/></td>
                     <td><input type="number" defaultValue={0} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "loss", e.target.value)}/></td>
                     <td>{pcs_sold}</td>
