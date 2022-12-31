@@ -64,20 +64,24 @@ export default function NewWeek(){
 
             js_clone.products.map(product =>{
                 product.stock_before = product.stock_after
-                //product.stock_after = 0
                 product.loss = 0
             })
 
+            js_clone.week_stat.coins_register -= js_clone.week_stat.coins_transfer
+            js_clone.week_stat.bills_register -= js_clone.week_stat.bills_transfer
+
+            js_clone.week_stat.coins_transfer = 0
+            js_clone.week_stat.bills_transfer = 0
             setWeekJSON(js_clone)
 
             const supRes = await getSupplyData()
             setUnassignedSupply(supRes)
-            updateValue(0,0,0,)
 
             console.log("week after set:" + JSON.stringify(weekJSON))
 
         }
         initData();
+        //updateValue(0,0,0);
     }, [])
 
 
@@ -191,12 +195,56 @@ export default function NewWeek(){
         //productTable()
     }
 
+    function updateMoney(value, key){
+
+    }
+
     function returnColor(value){
         if (value < 0) {
             return "red"
         }else {
             return "green"
         }
+    }
+
+    function returnSalesProfit(){
+        var sales_ges = 0
+        var prof_ges = 0
+        try{
+        weekJSON.products.map(product =>{
+            var supplyCount = 0
+            unassignedSupply.supplies.map(s => {
+                if (s.product_id === product.product_id){
+                    const date = Date.parse(s.supplyDate)
+                    if(weekJSON.week_stat.date_start < date && weekJSON.week_stat.date_end >= date){
+                        supplyCount += s.amount
+                    }
+                }
+            })
+
+            const pcs_sold = product["stock_before"] + supplyCount - product["stock_after"] - product["loss"]
+            const sales = pcs_sold * product["sp"]
+            sales_ges += sales
+            const profit = sales - (pcs_sold * product["pp"]) - (product["loss"] * product["pp"])
+            prof_ges+= profit
+        })}catch{
+            
+        }
+
+        return(
+            <div>
+                <Row tag="h3">
+                    <Col>Gesamter erwarteter Umsatz:</Col>
+                    <Col style={{textAlign:"right"}}>{parseFloat(sales_ges || 0).toFixed(2)}€</Col>
+                </Row>
+                <Row tag="h4">
+                    <Col>Gesamter erwarteter Profit:</Col>
+                    <Col style={{textAlign:"right"}}>{parseFloat(prof_ges|| 0).toFixed(2)}€</Col>
+                </Row>
+            </div>
+        )
+
+
     }
 
 
@@ -253,23 +301,23 @@ export default function NewWeek(){
                 <Row>
                     <Col>Münzen</Col>
                     <Col>{(parseFloat(parseFloat(lastWeek.week_stat.coins_register) - parseFloat(lastWeek.week_stat.coins_transfer)).toFixed(2)) || 0}€</Col>
-                    <Col><input type="number" defaultValue={0}/></Col>
-                    <Col><input type="number" defaultValue={0}/></Col>
+                    <Col><input type="number" defaultValue={0} onChange={e => updateMoney(e.target.value, "coins_register")}/></Col>
+                    <Col><input type="number" defaultValue={0} onChange={e => updateMoney(e.target.value, "coins_transfer")}/></Col>
                 </Row>
                 <Row>
                     <Col>Scheine</Col>
                     <Col>{(parseFloat(parseFloat(lastWeek.week_stat.bills_register) - parseFloat(lastWeek.week_stat.bills_transfer)).toFixed(2)) || 0}€</Col>
-                    <Col><input type="number" defaultValue={0}/></Col>
-                    <Col><input type="number" defaultValue={0}/></Col>
+                    <Col><input type="number" defaultValue={0} onChange={e => updateMoney(e.target.value, "bills_register")}/></Col>
+                    <Col><input type="number" defaultValue={0} onChange={e => updateMoney(e.target.value, "bills_transfer")}/></Col>
                 </Row>
                 <Row></Row>
                 <Row tag="h4">
                     <Col>Kassenstand real:</Col>
-                    <Col style={{textAlign:"right"}}>{register_count}</Col>
+                    <Col style={{textAlign:"right"}}>{parseFloat(register_count).toFixed(2)}</Col>
                 </Row>
                 <Row tag="h4">
                     <Col>Kassenstand soll:</Col>
-                    <Col style={{textAlign:"right"}}>{sales_act || 0}</Col>
+                    <Col style={{textAlign:"right"}}>0</Col>
                     
                 </Row>
                 <Row tag="h4">
@@ -363,14 +411,7 @@ export default function NewWeek(){
                                 {productTable()}
                             </tbody>
                         </Table>
-                        <Row tag="h3">
-                            <Col>Gesamter erwarteter Kassenstand:</Col>
-                            <Col style={{textAlign:"right"}}>{parseFloat(sales_act || 0).toFixed(2)}</Col>
-                        </Row>
-                        <Row tag="h4">
-                            <Col>Gesamter erwarteter Profit:</Col>
-                            <Col style={{textAlign:"right"}}>{parseFloat(profHyp || 0).toFixed(2)}</Col>
-                        </Row>
+                        {returnSalesProfit()}
                     </CardBody>
             </Card>
             <Card>
