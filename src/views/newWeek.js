@@ -54,7 +54,7 @@ export default function NewWeek(){
             const res = await getLastWeekStatData()
             setLastWeek(res)
 
-            const js_clone = Object.create(res)
+            var js_clone = JSON.parse(JSON.stringify(res))
 
             const today = new Date
             const date_old = js_clone.week_stat.date_end
@@ -67,8 +67,8 @@ export default function NewWeek(){
                 product.loss = 0
             })
 
-            js_clone.week_stat.coins_register -= js_clone.week_stat.coins_transfer
-            js_clone.week_stat.bills_register -= js_clone.week_stat.bills_transfer
+            js_clone.week_stat.coins_register = 0
+            js_clone.week_stat.bills_register = 0
 
             js_clone.week_stat.coins_transfer = 0
             js_clone.week_stat.bills_transfer = 0
@@ -110,17 +110,7 @@ export default function NewWeek(){
    
     }
 
-    function updateRegister(type, value){
-        let newJS = Object.create(weekJSON)
-        try{
-            newJS.week_stat[type] = value
-        }catch{
-
-        }
-
-        setWeekJSON(newJS)
-        
-    }
+ 
 
     function updateDate(type, date){
         let newJS = Object.create(weekJSON)
@@ -196,7 +186,9 @@ export default function NewWeek(){
     }
 
     function updateMoney(value, key){
-
+        var newJS = Object.create(weekJSON)
+        newJS.week_stat[key] = value
+        setWeekJSON(newJS)
     }
 
     function returnColor(value){
@@ -276,8 +268,8 @@ export default function NewWeek(){
                     <td><input type="number" defaultValue={product["stock_before"]} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "stock_after", e.target.value)}/></td>
                     <td><input type="number" defaultValue={0} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "loss", e.target.value)}/></td>
                     <td>{pcs_sold}</td>
-                    <td><input type="number" defaultValue={parseFloat(product["pp"].toFixed(3))} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "pp", e.target.value)}/></td>
-                    <td><input type="number" defaultValue={parseFloat(product["sp"].toFixed(3))} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "sp", e.target.value)}/></td>
+                    <td><input type="number" defaultValue={parseFloat(product["pp"]).toFixed(3)} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "pp", e.target.value)}/></td>
+                    <td><input type="number" defaultValue={parseFloat(product["sp"]).toFixed(3)} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "sp", e.target.value)}/></td>
                     <td>{parseFloat(sales).toFixed(2)}€</td>
                     <td><div style={{color: returnColor(profit)}}>{parseFloat(profit).toFixed(2)}€</div></td>
                 </tr>
@@ -289,7 +281,19 @@ export default function NewWeek(){
 
         
         try{
+            const coins_before =  parseFloat(lastWeek.week_stat.coins_register - lastWeek.week_stat.coins_transfer).toFixed(2)
+            const bills_before = parseFloat(lastWeek.week_stat.bills_register - lastWeek.week_stat.bills_transfer).toFixed(2)
+
+
             const register_count = weekJSON.week_stat.bills_register + weekJSON.week_stat.coins_register
+            const reg_coins = weekJSON.week_stat.coins_register
+            const reg_bills = weekJSON.week_stat.bills_register
+
+            console.log("Sales act in M-Table: " + sales_act)
+
+            const reg_est = parseFloat(parseFloat(sales_act) + parseFloat(coins_before) + parseFloat(bills_before)).toFixed(2)
+            const reg_missing = parseFloat(reg_est - register_count).toFixed(2)
+
         return(
             <div>
                 <Row>
@@ -300,29 +304,29 @@ export default function NewWeek(){
                 </Row>
                 <Row>
                     <Col>Münzen</Col>
-                    <Col>{(parseFloat(parseFloat(lastWeek.week_stat.coins_register) - parseFloat(lastWeek.week_stat.coins_transfer)).toFixed(2)) || 0}€</Col>
-                    <Col><input type="number" defaultValue={0} onChange={e => updateMoney(e.target.value, "coins_register")}/></Col>
+                    <Col>{parseFloat(coins_before).toFixed(2) || 0}€</Col>
+                    <Col><input type="number" defaultValue={parseFloat(reg_coins).toFixed(2)} onChange={e => updateMoney(e.target.value, "coins_register")}/></Col>
                     <Col><input type="number" defaultValue={0} onChange={e => updateMoney(e.target.value, "coins_transfer")}/></Col>
                 </Row>
                 <Row>
                     <Col>Scheine</Col>
-                    <Col>{(parseFloat(parseFloat(lastWeek.week_stat.bills_register) - parseFloat(lastWeek.week_stat.bills_transfer)).toFixed(2)) || 0}€</Col>
-                    <Col><input type="number" defaultValue={0} onChange={e => updateMoney(e.target.value, "bills_register")}/></Col>
+                    <Col>{parseFloat(bills_before).toFixed(2) || 0}€</Col>
+                    <Col><input type="number" defaultValue={parseFloat(reg_bills).toFixed(2)} onChange={e => updateMoney(e.target.value, "bills_register")}/></Col>
                     <Col><input type="number" defaultValue={0} onChange={e => updateMoney(e.target.value, "bills_transfer")}/></Col>
                 </Row>
                 <Row></Row>
                 <Row tag="h4">
                     <Col>Kassenstand real:</Col>
-                    <Col style={{textAlign:"right"}}>{parseFloat(register_count).toFixed(2)}</Col>
+                    <Col style={{textAlign:"right"}}>{parseFloat(register_count).toFixed(2)}€</Col>
                 </Row>
                 <Row tag="h4">
                     <Col>Kassenstand soll:</Col>
-                    <Col style={{textAlign:"right"}}>0</Col>
+                    <Col style={{textAlign:"right"}}>{reg_est}€</Col>
                     
                 </Row>
                 <Row tag="h4">
                     <Col>Kassenfehlbetrag:</Col>
-                    <Col style={{color: returnColor(register_count - sales_act), textAlign:"right"}}>{sales_act - register_count}</Col>
+                    <Col style={{color: returnColor(reg_missing * -1), textAlign:"right"}}>{reg_missing}€</Col>
                 </Row>
             </div>
         );}catch{
