@@ -81,9 +81,14 @@ export default function NewWeek(){
 
         }
         initData();
-        //updateValue(0,0,0);
+        updateValue(0,0,0);
     }, [])
 
+    function updateCheckbox(value){
+        let newJS = Object.create(weekJSON)
+        newJS.week_stat.was_regular = value
+        setWeekJSON(newJS)
+    }
 
     function returnDateRow(){
         try{
@@ -100,6 +105,9 @@ export default function NewWeek(){
                     </Col>
                     <Col>
                         <DatePicker selected={end_date} dateFormat="dd.MM.yyyy" onChange={date => updateDate("date_end", date)}></DatePicker>
+                    </Col>
+                    <Col>
+                        <Input type="checkbox" onChange={e => updateCheckbox(e.target.checked)}/>
                     </Col>
                 </Row>
             )
@@ -148,9 +156,10 @@ export default function NewWeek(){
     function updateValue(id, name, value){
         console.log(id, name, value)
         var supplies = unassignedSupply.supplies
-        let newJS = Object.create(weekJSON)
+        let newJS = Object.create(weekJSON) 
         var profges = 0
         var salesges = 0
+        try{
         newJS.products.map(product =>{
             console.log(parseInt(product.product_id), parseInt(id))
 
@@ -176,7 +185,9 @@ export default function NewWeek(){
             profges+= profit
             
 
-        })
+        })}catch{
+
+        }
         setWeekJSON(newJS)
         setProfHyp(profges)
         setSalesAct(salesges)
@@ -189,6 +200,13 @@ export default function NewWeek(){
         var newJS = Object.create(weekJSON)
         newJS.week_stat[key] = value
         setWeekJSON(newJS)
+    }
+
+    function saveWeek(){
+        let saveJS = weekJSON
+        saveJS.week_stat.id = 0
+        saveJS.week_stat.author = localStorage.getItem("username")
+        console.log("WeekJSON: " + JSON.stringify(saveJS.week_stat))
     }
 
     function returnColor(value){
@@ -285,7 +303,8 @@ export default function NewWeek(){
             const bills_before = parseFloat(lastWeek.week_stat.bills_register - lastWeek.week_stat.bills_transfer).toFixed(2)
 
 
-            const register_count = weekJSON.week_stat.bills_register + weekJSON.week_stat.coins_register
+            var register_count = parseFloat(weekJSON.week_stat.bills_register)
+            register_count += parseFloat(weekJSON.week_stat.coins_register)
             const reg_coins = weekJSON.week_stat.coins_register
             const reg_bills = weekJSON.week_stat.bills_register
 
@@ -369,6 +388,7 @@ export default function NewWeek(){
                 <Row>
                         <Col>Beginn</Col>
                         <Col>Ende</Col>
+                        <Col>Normale Woche</Col>
                     </Row>
                 {returnDateRow()}
                 </CardBody>
@@ -426,6 +446,7 @@ export default function NewWeek(){
                     {returnMoneyTable()}
                 </CardBody>
             </Card>
+            <Button onClick={() => saveWeek()}>Wochenstatistik speichern</Button>
             
         </div>
     );

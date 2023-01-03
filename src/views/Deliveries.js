@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardBody, CardHeader, CardTitle, Col, Row, Table } from "reactstrap";
 import axios from "axios";
+import Moment from "react-moment";
 
 export default function () {
 
@@ -8,10 +9,33 @@ const [deliveries, setDeliveries] = useState([]);
 const jwt = localStorage.getItem("jwt")
 
 const getDeliveryData = async () => {
-    const response = await axios.post("http://178.254.2.54:5000/api/weekstats/all", {jwt})
+    const response = await axios.post("http://178.254.2.54:5000/api/supply/all", {jwt})
     const js = await response.data;
-    const js_parsed = js["week_stats"].reverse()          
+    const js_parsed = js["supplies"].reverse()          
     return js_parsed
+}
+
+useEffect( ()=> {
+    async function initData(){
+        const data = await getDeliveryData();
+        setDeliveries(data)
+    }
+    initData();
+
+})
+
+function returnSupplyTable(){
+    return deliveries.map( supply => {
+        return(
+            <tr>
+                <th><Moment format="dd DD.MM.YYYY">{supply.supplyDate}</Moment></th>
+                <th>{supply.product_id}</th>
+                <th>{supply.amount}</th>
+                <th>{supply.mhd}</th>
+                <th>{supply.author}</th>
+            </tr>
+        )
+    })
 }
 
 
@@ -42,9 +66,11 @@ return(
                                 <th>Artikel</th>
                                 <th>Anzahl</th>
                                 <th>MHD</th>
+                                <th>Geprüft durch</th>
                             </tr>
                         </thead>
                         <tbody>
+                            {returnSupplyTable()}
                         </tbody>
                     </Table>    
                 </CardBody>

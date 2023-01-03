@@ -39,6 +39,7 @@ export default function (props) {
         console.log("loginRes:" + loginRes)
         if(loginRes["error"] === false){
             var token = localStorage.getItem('token')
+            localStorage.setItem("username", username)
             console.log("jwt: " + token)
             history.push("/admin")
         }else{
