@@ -14,9 +14,10 @@ export default function NewWeek(){
 
     const history = useHistory();
     const [lastWeek, setLastWeek] = useState([])
-    const [weekJSON, setWeekJSON] = useState([])
+    var [weekJSON, setWeekJSON] = useState([])
     const [unassignedSupply, setUnassignedSupply] = useState([])
     const [supplyToAdd, setSupplyToAdd] = useState([])
+    const [allProducts, setAllProducts] = useState([])
     var [profHyp, setProfHyp] = useState()
     var [sales_act, setSalesAct] = useState()
     const jwt = localStorage.getItem("jwt")
@@ -48,6 +49,35 @@ export default function NewWeek(){
         return js
     }
 
+    const getProductsData = async() =>{
+        const response = await axios.post("http://178.254.2.54:5000/api/weekstats/products", {jwt})
+        const js = await response.data;
+        return js
+    }
+
+    function setProdJson(){
+        const newProdJSON = allProducts.map(product => {
+
+            const s_before = weekJSON.products.map(p => {
+                if(p.product_id === product.id){
+                    return p.stock_before
+                }
+            })
+
+            return {
+                "product_id":product.id,
+                "name":product.name,
+                "stock_before": s_before,
+                "stock_after":s_before,
+                "loss":0,
+                "pp":product.buy_value,
+                "sp":product.sell_value
+            }
+        })
+
+        weekJSON.products = newProdJSON
+    }
+
     useEffect(() => {
         console.log("IN USE EFFECT")
         async function initData(){
@@ -77,10 +107,14 @@ export default function NewWeek(){
             const supRes = await getSupplyData()
             setUnassignedSupply(supRes)
 
+            const prod = await getProductsData()
+            setAllProducts(prod)
+
             console.log("week after set:" + JSON.stringify(weekJSON))
 
         }
         initData();
+        setProdJson();
         updateValue(0,0,0);
     }, [])
 
@@ -207,6 +241,7 @@ export default function NewWeek(){
         saveJS.week_stat.id = 0
         saveJS.week_stat.author = localStorage.getItem("username")
         console.log("WeekJSON: " + JSON.stringify(saveJS.week_stat))
+        console.log("Products: " + JSON.stringify(weekJSON.products))
     }
 
     function returnColor(value){
@@ -260,34 +295,47 @@ export default function NewWeek(){
 
     function productTable(){
         console.log("Supply to add: " + JSON.stringify(supplyToAdd))
-        const products = weekJSON["products"]|| []
+        const products = allProducts || []
+        const weekProds = weekJSON["products"]|| []
         const supplies = unassignedSupply.supplies || []
         return products.map(product => {
 
             var supplyCount = 0
             supplies.map(s => {
-                if (s.product_id === product.product_id){
+                if (s.product_id === product.id){
                     const date = Date.parse(s.supplyDate)
                     if(weekJSON.week_stat.date_start < date && weekJSON.week_stat.date_end >= date){
                         supplyCount += s.amount
                     }
                 }
             })
-            const pcs_sold = product["stock_before"] + supplyCount - product["stock_after"] - product["loss"]
-            const sales = pcs_sold * product["sp"]
-            const profit = sales - (pcs_sold * product["pp"]) - (product["loss"] * product["pp"])
-            console.log("Profit: " + profit + product.name)   
+            var s_before = 0
+            var s_after = 0
+            var loss = 0
+            weekProds.map(weekProd => {
+                if(weekProd.product_id === product.id){
+                    s_before = weekProd["stock_before"]
+                    s_after = weekProd["stock_after"]
+                    loss = weekProd["loss"]
+                }
+            })
+
+            const pcs_sold = s_before + supplyCount - s_after - loss
+            const sales = pcs_sold * product["sell_value"]
+            const profit = sales - (pcs_sold * product["buy_value"]) - (loss * product["buy_value"])
+
+            console.log("Profit: " + profit + product.name) 
 
             return(
                 <tr key={product["id"]}>
                     <td>{product["name"]}</td>
-                    <td>{product["stock_before"] || 0}</td>
+                    <td>{s_before || 0}</td>
                     <td>{supplyCount}</td>
-                    <td><input type="number" defaultValue={product["stock_before"]} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "stock_after", e.target.value)}/></td>
-                    <td><input type="number" defaultValue={0} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "loss", e.target.value)}/></td>
+                    <td><input type="number" defaultValue={s_before} style={{width: "60px"}} onChange={e => updateValue(product.id, "stock_after", e.target.value)}/></td>
+                    <td><input type="number" defaultValue={0} style={{width: "60px"}} onChange={e => updateValue(product.id, "loss", e.target.value)}/></td>
                     <td>{pcs_sold}</td>
-                    <td><input type="number" defaultValue={parseFloat(product["pp"]).toFixed(3)} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "pp", e.target.value)}/></td>
-                    <td><input type="number" defaultValue={parseFloat(product["sp"]).toFixed(3)} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "sp", e.target.value)}/></td>
+                    <td><input type="number" defaultValue={parseFloat(product["buy_value"]).toFixed(3)} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "pp", e.target.value)}/></td>
+                    <td><input type="number" defaultValue={parseFloat(product["sell_value"]).toFixed(3)} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "sp", e.target.value)}/></td>
                     <td>{parseFloat(sales).toFixed(2)}€</td>
                     <td><div style={{color: returnColor(profit)}}>{parseFloat(profit).toFixed(2)}€</div></td>
                 </tr>
