@@ -28,6 +28,7 @@ import NewWeek from "views/newWeek.js";
 import Login from "views/LoginPage.js";
 import Deliveries from "./views/Deliveries";
 import WeekStatDetailS from "./views/WeekStatDetails";
+import Stock from "./views/stock.js"
 
 var routes = [
   {
@@ -123,6 +124,14 @@ var routes = [
     component: WeekStatDetailS,
     layout: "/admin",
     showInSideBar: false
+  },
+  {
+    path: "/stock",
+    name: "Inventur",
+    icon: "tim-icons icon-app",
+    component: Stock,
+    layout: "/admin",
+    showInSideBar: true
   }
 ];
 export default routes;
