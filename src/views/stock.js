@@ -14,14 +14,21 @@ export default function Stock(){
     const jwt = localStorage.getItem("jwt")
     const [allProducts, setAllProducts] = useState([])
 
-    function pushToNewWeek(){
-        console.log("Try to push");
-        history.push("/admin/newWeek")
+    async function getScale(productId){
+        const response = await axios.post("http://178.254.2.54:5000/api/scale/single", {"id":productId, jwt})
+        const js = await response.data
+        return js["amount"]
     }
 
     const getProductsData = async() =>{
         const response = await axios.post("http://178.254.2.54:5000/api/weekstats/products", {jwt})
         const js = await response.data;
+        js.map(product => {
+            product["amount"]=0
+            product["scaleAmount"]=0
+            product["singleAmount"]=0
+            product["packageCount"]=0
+        })
         return js
     }
 
@@ -34,35 +41,76 @@ export default function Stock(){
         initData();
     }, [])
 
-    function addScaleResult(productId){
-        
+    async function addScaleResult(productId){ 
+        const prod = Object.create(allProducts)
+        const amount = await getScale(productId)
+        prod.map(product =>{
+            if(parseInt(product["id"]) === parseInt(productId)){
+                product["scaleAmount"] += amount
+                product["amount"]=parseInt(product["singleAmount"]) + parseInt(product["packageCount"])*parseInt(product["package_size"]) + parseInt(product["scaleAmount"])
+            }
+        })
+        setAllProducts(prod)
+    }
+
+    async function resetScaleResult(productId){ 
+        const prod = Object.create(allProducts)
+        prod.map(product =>{
+            if(parseInt(product["id"]) === parseInt(productId)){
+                product["scaleAmount"] = 0
+                product["amount"]=parseInt(product["singleAmount"]) + parseInt(product["packageCount"])*parseInt(product["package_size"]) + parseInt(product["scaleAmount"])
+            }
+        })
+        setAllProducts(prod)
     }
 
     function updateAmount(productId, isSingle, amount){
+        const prod = Object.create(allProducts)
         
+        if (isSingle){
+            prod.map(product =>{
+                if(parseInt(product["id"]) === parseInt(productId)){
+                    product["singleAmount"]=parseInt(amount)
+                    product["amount"]=parseInt(product["singleAmount"]) + parseInt(product["packageCount"])*parseInt(product["package_size"]) + parseInt(product["scaleAmount"])
+                }
+            })
+        }else{
+            prod.map(product =>{
+                if(parseInt(product["id"]) === parseInt(productId)){
+                    product["packageCount"]=amount
+                    product["amount"]=parseInt(product["singleAmount"]) + parseInt(product["packageCount"])*parseInt(product["package_size"]) + parseInt(product["scaleAmount"])
+                }
+            })
+        }
+        setAllProducts(prod)
     }
 
     function productTable(){
-        const products = allProducts
-        return products.map(product => {
-
-
-            var amount = 0
+        return allProducts.map(product => {
 
             return(
                 <tr key={product["id"]}>
                     <td>{product["name"]}</td>
-                    <td><input class="form-control" type="number" defaultValue="0" style={{width: "60px"}} onChange={e => updateAmount(product.product_id, true, e.target.value)}/></td>
-                    <td><input class="form-control" type="number" defaultValue="0" style={{width: "60px"}} onChange={e => updateAmount(product.product_id, false, e.target.value)}/></td>
+                    <td><input class="form-control" type="number" defaultValue="0" style={{width: "60px"}} onChange={e => updateAmount(product["id"], true, e.target.value)}/></td>
+                    <td><input class="form-control" type="number" defaultValue="0" style={{width: "60px"}} onChange={e => updateAmount(product["id"], false, e.target.value)}/></td>
                     <td>
                         <Button onClick={() => addScaleResult(product["id"])}>
                             <i className="tim-icons icon-wifi" />
                         </Button>
                     </td>
-                    <td>{amount}</td>
+                    <td>
+                        <Button onClick={() => resetScaleResult(product["id"])}>
+                            <i className="tim-icons icon-simple-remove" />
+                        </Button>
+                    </td> 
+                    <td>{product["amount"]}</td>
                 </tr>
         );
     })
+    }
+
+    function save(){
+
     }
 
     return (
@@ -83,7 +131,7 @@ export default function Stock(){
                     <CardTitle tag="h3">Bitte Bestände eingeben</CardTitle>
                     </Col>
                     <Col md="auto">
-                    <Button onClick={pushToNewWeek}>Speichern</Button>
+                    <Button onClick={save}>Speichern</Button>
                     </Col>
                     </Row>
                 </CardHeader>
@@ -95,6 +143,7 @@ export default function Stock(){
                                 <th>Einzeln</th>
                                 <th>Packungen</th>
                                 <th>Waagenergebnis addieren</th>
+                                <th>Waagenergebnis entfernen</th>
                                 <th>Anzahl</th>
                             </tr>
                         </thead>
