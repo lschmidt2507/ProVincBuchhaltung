@@ -17,6 +17,7 @@ export default function NewWeek(){
     var [weekJSON, setWeekJSON] = useState([])
     const [unassignedSupply, setUnassignedSupply] = useState([])
     const [supplyToAdd, setSupplyToAdd] = useState([])
+    var [supplyIDs, setSupplyIDs] = useState([])
     const [allProducts, setAllProducts] = useState([])
     var [profHyp, setProfHyp] = useState()
     var [sales_act, setSalesAct] = useState()
@@ -27,6 +28,12 @@ export default function NewWeek(){
 
     function goBack(){
         history.push("/admin/weeks");
+    }
+
+    async function pushNewWeekToServer(JS_Object){
+        const response = await axios.post("http://178.254.2.54:5000/api/weekstats/new", {JS_Object})
+        const msg = await response.data
+        console.log(JSON.stringify(msg))
     }
 
     const getLastWeekStatData = async() => {
@@ -55,27 +62,27 @@ export default function NewWeek(){
         return js
     }
 
-    function setProdJson(){
+    function getProdJson(){
         const newProdJSON = allProducts.map(product => {
-
-            const s_before = weekJSON.products.map(p => {
+            var s_before = 0
+            weekJSON.products.map(p => {
                 if(p.product_id === product.id){
-                    return p.stock_before
+                    s_before = p.stock_before
                 }
             })
-
+            console.log("Name: " + product.name)
             return {
                 "product_id":product.id,
                 "name":product.name,
                 "stock_before": s_before,
                 "stock_after":s_before,
                 "loss":0,
-                "pp":product.buy_value,
-                "sp":product.sell_value
+                "pp":product.pp,
+                "sp":product.sp
             }
         })
 
-        weekJSON.products = newProdJSON
+        return newProdJSON
     }
 
     useEffect(() => {
@@ -102,6 +109,7 @@ export default function NewWeek(){
 
             js_clone.week_stat.coins_transfer = 0
             js_clone.week_stat.bills_transfer = 0
+            js_clone.products = getProdJson()
             setWeekJSON(js_clone)
 
             const supRes = await getSupplyData()
@@ -114,7 +122,6 @@ export default function NewWeek(){
 
         }
         initData();
-        setProdJson();
         updateValue(0,0,0);
     }, [])
 
@@ -157,6 +164,7 @@ export default function NewWeek(){
     function updateDate(type, date){
         let newJS = Object.create(weekJSON)
         var updatedSupplyToAdd = new Object();
+        var IDs = [];
         updatedSupplyToAdd = []
         try{
             newJS.week_stat[type] = date
@@ -168,6 +176,8 @@ export default function NewWeek(){
                 if(weekJSON.week_stat.date_start < date && weekJSON.week_stat.date_end >= date){
                     var toAddBefore = supplyToAdd[supply.product_id] || 0
                     updatedSupplyToAdd[supply.product_id] = toAddBefore + supply.amount
+                    console.log("Sup ID: " + supply.id)
+                    IDs.push(supply.id)
                 }
             });
 
@@ -184,6 +194,9 @@ export default function NewWeek(){
             console.log("In supply: " + supply)
         })
         setWeekJSON(newJS)
+        console.log("IDs in Update: " + IDs)
+        setSupplyIDs(IDs)
+        updateValue(0,0,0);
     }
 
 
@@ -193,6 +206,7 @@ export default function NewWeek(){
         let newJS = Object.create(weekJSON) 
         var profges = 0
         var salesges = 0
+        var supIDs = []
         try{
         newJS.products.map(product =>{
             console.log(parseInt(product.product_id), parseInt(id))
@@ -208,6 +222,8 @@ export default function NewWeek(){
                     const date = Date.parse(s.supplyDate)
                     if(weekJSON.week_stat.date_start < date && weekJSON.week_stat.date_end >= date){
                         supplyCount += s.amount
+                        console.log("ID: " + s.id)
+                        supIDs.push(s.id)
                     }
                 }
             })
@@ -222,10 +238,11 @@ export default function NewWeek(){
         })}catch{
 
         }
+        console.log("SupIDs in updateValue: " + supIDs)
         setWeekJSON(newJS)
         setProfHyp(profges)
         setSalesAct(salesges)
-        console.log("new JS: " + JSON.stringify(weekJSON))
+        setSupplyIDs(supIDs)
         //setWeekJSON(weekJSON)
         //productTable()
     }
@@ -242,6 +259,14 @@ export default function NewWeek(){
         saveJS.week_stat.author = localStorage.getItem("username")
         console.log("WeekJSON: " + JSON.stringify(saveJS.week_stat))
         console.log("Products: " + JSON.stringify(weekJSON.products))
+        console.log("Wareneingänge: " + JSON.stringify(supplyIDs))
+        const dataJSON = {
+            "jwt":jwt,
+            "week_stat":weekJSON.week_stat,
+            "products":weekJSON.products,
+            "supply":supplyIDs
+        }
+        pushNewWeekToServer(dataJSON)
     }
 
     function returnColor(value){
@@ -321,21 +346,20 @@ export default function NewWeek(){
             })
 
             const pcs_sold = s_before + supplyCount - s_after - loss
-            const sales = pcs_sold * product["sell_value"]
-            const profit = sales - (pcs_sold * product["buy_value"]) - (loss * product["buy_value"])
+            const sales = pcs_sold * product["sp"]
+            const profit = sales - (pcs_sold * product["pp"]) - (loss * product["pp"])
 
-            console.log("Profit: " + profit + product.name) 
 
             return(
                 <tr key={product["id"]}>
                     <td>{product["name"]}</td>
                     <td>{s_before || 0}</td>
                     <td>{supplyCount}</td>
-                    <td><input type="number" defaultValue={s_before} style={{width: "60px"}} onChange={e => updateValue(product.id, "stock_after", e.target.value)}/></td>
-                    <td><input type="number" defaultValue={0} style={{width: "60px"}} onChange={e => updateValue(product.id, "loss", e.target.value)}/></td>
+                    <td><input  class="form-control" type="number" defaultValue={s_before} style={{width: "80px"}} onChange={e => updateValue(product.id, "stock_after", e.target.value)}/></td>
+                    <td><input  class="form-control" type="number" defaultValue={0} style={{width: "80px"}} onChange={e => updateValue(product.id, "loss", e.target.value)}/></td>
                     <td>{pcs_sold}</td>
-                    <td><input type="number" defaultValue={parseFloat(product["buy_value"]).toFixed(3)} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "pp", e.target.value)}/></td>
-                    <td><input type="number" defaultValue={parseFloat(product["sell_value"]).toFixed(3)} style={{width: "60px"}} onChange={e => updateValue(product.product_id, "sp", e.target.value)}/></td>
+                    <td><input  class="form-control" type="number" defaultValue={parseFloat(product["pp"]).toFixed(3)} style={{width: "80px"}} onChange={e => updateValue(product.id, "pp", e.target.value)}/></td>
+                    <td><input  class="form-control" type="number" defaultValue={parseFloat(product["sp"]).toFixed(3)} style={{width: "80px"}} onChange={e => updateValue(product.id, "sp", e.target.value)}/></td>
                     <td>{parseFloat(sales).toFixed(2)}€</td>
                     <td><div style={{color: returnColor(profit)}}>{parseFloat(profit).toFixed(2)}€</div></td>
                 </tr>
@@ -356,7 +380,6 @@ export default function NewWeek(){
             const reg_coins = weekJSON.week_stat.coins_register
             const reg_bills = weekJSON.week_stat.bills_register
 
-            console.log("Sales act in M-Table: " + sales_act)
 
             const reg_est = parseFloat(parseFloat(sales_act) + parseFloat(coins_before) + parseFloat(bills_before)).toFixed(2)
             const reg_missing = parseFloat(reg_est - register_count).toFixed(2)
@@ -372,14 +395,14 @@ export default function NewWeek(){
                 <Row>
                     <Col>Münzen</Col>
                     <Col>{parseFloat(coins_before).toFixed(2) || 0}€</Col>
-                    <Col><input type="number" defaultValue={parseFloat(reg_coins).toFixed(2)} onChange={e => updateMoney(e.target.value, "coins_register")}/></Col>
-                    <Col><input type="number" defaultValue={0} onChange={e => updateMoney(e.target.value, "coins_transfer")}/></Col>
+                    <Col><input class="form-control" type="number" defaultValue={parseFloat(reg_coins).toFixed(2)} onChange={e => updateMoney(e.target.value, "coins_register")}/></Col>
+                    <Col><input  class="form-control" type="number" defaultValue={0} onChange={e => updateMoney(e.target.value, "coins_transfer")}/></Col>
                 </Row>
                 <Row>
                     <Col>Scheine</Col>
                     <Col>{parseFloat(bills_before).toFixed(2) || 0}€</Col>
-                    <Col><input type="number" defaultValue={parseFloat(reg_bills).toFixed(2)} onChange={e => updateMoney(e.target.value, "bills_register")}/></Col>
-                    <Col><input type="number" defaultValue={0} onChange={e => updateMoney(e.target.value, "bills_transfer")}/></Col>
+                    <Col><input  class="form-control" type="number" defaultValue={parseFloat(reg_bills).toFixed(2)} onChange={e => updateMoney(e.target.value, "bills_register")}/></Col>
+                    <Col><input  class="form-control"type="number" defaultValue={0} onChange={e => updateMoney(e.target.value, "bills_transfer")}/></Col>
                 </Row>
                 <Row></Row>
                 <Row tag="h4">
