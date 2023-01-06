@@ -31,7 +31,7 @@ export default function NewWeek(){
     }
 
     async function pushNewWeekToServer(JS_Object){
-        const response = await axios.post("http://178.254.2.54:5000/api/weekstats/new", {JS_Object})
+        const response = await axios.post("http://178.254.2.54:5000/api/weekstats/new", JS_Object)
         const msg = await response.data
         console.log(JSON.stringify(msg))
     }
@@ -62,12 +62,14 @@ export default function NewWeek(){
         return js
     }
 
-    function getProdJson(){
+    function getProdJson(JS_before){
         const newProdJSON = allProducts.map(product => {
             var s_before = 0
-            weekJSON.products.map(p => {
+            JS_before.map(p => {
                 if(p.product_id === product.id){
                     s_before = p.stock_before
+                    console.log("JS in Map: " + JSON.stringify(p))
+                    console.log("s_before: " + s_before)
                 }
             })
             console.log("Name: " + product.name)
@@ -109,14 +111,15 @@ export default function NewWeek(){
 
             js_clone.week_stat.coins_transfer = 0
             js_clone.week_stat.bills_transfer = 0
-            js_clone.products = getProdJson()
-            setWeekJSON(js_clone)
-
-            const supRes = await getSupplyData()
-            setUnassignedSupply(supRes)
 
             const prod = await getProductsData()
             setAllProducts(prod)
+
+            js_clone.products = getProdJson(js_clone.products)
+            setWeekJSON(js_clone)
+            const supRes = await getSupplyData()
+            setUnassignedSupply(supRes)
+
 
             console.log("week after set:" + JSON.stringify(weekJSON))
 
