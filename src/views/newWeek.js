@@ -438,7 +438,7 @@ export default function NewWeek(){
         
         return(
             <tr>
-                <th>{supply.product_id}</th>
+                <th>{supply.product_name}</th>
                 <th>{supply.amount}</th>
                 <th><Moment format="dd DD.MM.YYYY">{supply.supplyDate}</Moment></th>
                 <th>{supply.author}</th>

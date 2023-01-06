@@ -62,8 +62,8 @@ export default function(props) {
         const sup = supplyData.supplies || []
         return sup.map(s => {
             return(
-                <tr key={s.id}>
-                    <th>{s.product_id}</th>
+                <tr key={s.product_id}>
+                    <th>{s.product_name}</th>
                     <th>{s.amount}</th>
                     <th><Moment format="dd DD.MM.YYYY">{s.supplyDate}</Moment></th>
                     <th>{s.author}</th>
