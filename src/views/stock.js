@@ -20,6 +20,12 @@ export default function Stock(){
         return js["amount"]
     }
 
+    async function sendStockData(products){
+        const response = await axios.post("http://178.254.2.54:5000/api/scale/setstock", {products, jwt})
+        const js = await response.data
+        return js
+    }
+
     const getProductsData = async() =>{
         const response = await axios.post("http://178.254.2.54:5000/api/weekstats/products", {jwt})
         const js = await response.data;
@@ -109,8 +115,13 @@ export default function Stock(){
     })
     }
 
-    function save(){
-
+    async function save(){
+        var sendData = []
+        allProducts.map(product => {
+            sendData.push({"id":product["id"],"amount":product["amount"]})
+        })
+        console.log(sendData)
+        await sendStockData(sendData)
     }
 
     return (
