@@ -11,6 +11,7 @@ export default function(props) {
 
     const[weekData, setWeekData] = useState([]);
     const[supplyData, setSupplyData] = useState([]);
+    const[lastWeek, setLastWeek] = useState([]);
 
     //localStorage.setItem("week_id", null)
     
@@ -27,16 +28,37 @@ export default function(props) {
         return js   
     }
 
+    const getLastWeekData = async () => {
+        const response = await axios.post("http://178.254.2.54:5000/api/weekstats/single", {jwt, "id":id -=1})
+        const js = await response.data;
+        return js   
+    }
+
     useEffect(() => {
         async function initData(){
             const week = await getWeekData()
             setWeekData(week)
             const supplies = await getSupplyData()
             setSupplyData(supplies)
+            const lastWeek = await getLastWeekData()
+            setLastWeek(lastWeek)
 
         }
         initData();
     }, [])
+
+    function updateMoney(){
+        
+    }
+
+    function returnColor(value){
+        if (value < 0) {
+            return "red"
+        }else {
+            return "green"
+        }
+    }
+
 
     function returnDateHeader(){
         try{
@@ -130,21 +152,95 @@ export default function(props) {
 
         return(
             <div>
-                <Row>
-                    <Col>Gesamter erwarteter Umsatz</Col>
-                    <Col>{parseFloat(sales_ges).toFixed(2)}</Col>
+                <Row tag="h3">
+                    <Col>Gesamter erwarteter Umsatz:</Col>
+                    <Col style={{textAlign:"right"}}>{parseFloat(sales_ges || 0).toFixed(2)}€</Col>
                 </Row>
-                <Row>
-                    <Col>Gesamter erwarteter Profit</Col>
-                    <Col>{parseFloat(prof_ges).toFixed(2)}</Col>
+                <Row tag="h4">
+                    <Col>Gesamter erwarteter Profit:</Col>
+                    <Col style={{textAlign:"right"}}>{parseFloat(prof_ges|| 0).toFixed(2)}€</Col>
                 </Row>
             </div>
         )
-
     }
 
     function returnMoneyTable(){
 
+        try{
+        const week = weekData.products || []
+        const sup = supplyData.supplies || []
+
+        var sales_ges = 0
+        var prof_ges = 0
+
+        week.map(p =>{
+            var supply_count = 0
+            sup.map(s => {
+                if(s.product_id === p.product_id){
+                    supply_count += s.amount
+                }
+            })
+
+            var pcs_sold = p.stock_before + supply_count - p.stock_after - p.loss
+            var sales = pcs_sold * p.sp
+            sales_ges += sales
+            var profit = sales - (pcs_sold * p.pp)
+            prof_ges += profit
+
+        })
+
+
+            const coins_before =  parseFloat(lastWeek.week_stat.coins_register - lastWeek.week_stat.coins_transfer).toFixed(2)
+            const bills_before = parseFloat(lastWeek.week_stat.bills_register - lastWeek.week_stat.bills_transfer).toFixed(2)
+
+
+            var register_count = parseFloat(weekData.week_stat.bills_register)
+            register_count += parseFloat(weekData.week_stat.coins_register)
+            const reg_coins = weekData.week_stat.coins_register
+            const reg_bills = weekData.week_stat.bills_register
+
+
+            const reg_est = parseFloat(parseFloat(sales_ges) + parseFloat(coins_before) + parseFloat(bills_before)).toFixed(2)
+            const reg_missing = parseFloat(reg_est - register_count).toFixed(2)
+
+        return(
+            <div>
+                <Row>
+                    <Col></Col>
+                    <Col>Vorher in €</Col>
+                    <Col>Nachher in €</Col>
+                    <Col>Transfer in €</Col>
+                </Row>
+                <Row>
+                    <Col>Münzen</Col>
+                    <Col>{parseFloat(coins_before).toFixed(2) || 0}€</Col>
+                    <Col><input class="form-control" type="number" defaultValue={parseFloat(reg_coins).toFixed(2)} onChange={e => updateMoney(e.target.value, "coins_register")}/></Col>
+                    <Col><input  class="form-control" type="number" defaultValue={0} onChange={e => updateMoney(e.target.value, "coins_transfer")}/></Col>
+                </Row>
+                <Row>
+                    <Col>Scheine</Col>
+                    <Col>{parseFloat(bills_before).toFixed(2) || 0}€</Col>
+                    <Col><input  class="form-control" type="number" defaultValue={parseFloat(reg_bills).toFixed(2)} onChange={e => updateMoney(e.target.value, "bills_register")}/></Col>
+                    <Col><input  class="form-control"type="number" defaultValue={0} onChange={e => updateMoney(e.target.value, "bills_transfer")}/></Col>
+                </Row>
+                <Row></Row>
+                <Row tag="h4">
+                    <Col>Kassenstand real:</Col>
+                    <Col style={{textAlign:"right"}}>{parseFloat(register_count).toFixed(2)}€</Col>
+                </Row>
+                <Row tag="h4">
+                    <Col>Kassenstand soll:</Col>
+                    <Col style={{textAlign:"right"}}>{reg_est}€</Col>
+                    
+                </Row>
+                <Row tag="h4">
+                    <Col>Kassenfehlbetrag:</Col>
+                    <Col style={{color: returnColor(reg_missing * -1), textAlign:"right"}}>{reg_missing}€</Col>
+                </Row>
+            </div>
+        )}catch{
+
+        }
         
     }
 
@@ -206,6 +302,14 @@ export default function(props) {
                         </tbody>
                     </Table>
                     {returnSalesProfit()}
+                </CardBody>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle tag="h2">Bar-Kassenzählung</CardTitle>
+                </CardHeader>
+                <CardBody>
+                    {returnMoneyTable()}
                 </CardBody>
             </Card>
         </div>
