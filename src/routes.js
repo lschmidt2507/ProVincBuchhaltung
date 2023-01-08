@@ -29,11 +29,8 @@ import Login from "views/LoginPage.js";
 import Deliveries from "./views/Deliveries";
 import WeekStatDetailS from "./views/WeekStatDetails";
 import Stock from "./views/stock.js"
-<<<<<<< Updated upstream
 import newSup from "./views/newSup";
-=======
 import Order from "views/order.js"
->>>>>>> Stashed changes
 
 var routes = [
   {
@@ -139,20 +136,19 @@ var routes = [
     showInSideBar: true
   },
   {
-<<<<<<< Updated upstream
     path: "/newSupply",
     name: "Neuer Wareneingang",
     component: newSup,
     layout: "/admin",
     showInSideBar: false
-=======
+  },
+  {
     path: "/order",
     name: "Bestellmengen",
     icon: "tim-icons icon-basket-simple",
     component: Order,
     layout: "/admin",
     showInSideBar: true
->>>>>>> Stashed changes
   }
 ];
 export default routes;
