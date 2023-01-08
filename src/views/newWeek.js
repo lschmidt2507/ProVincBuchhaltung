@@ -386,6 +386,7 @@ export default function NewWeek(){
 
             const reg_est = parseFloat(parseFloat(sales_act) + parseFloat(coins_before) + parseFloat(bills_before)).toFixed(2)
             const reg_missing = parseFloat(reg_est - register_count).toFixed(2)
+            const prof_act = parseFloat(profHyp - reg_missing).toFixed(2)
 
         return(
             <div>
@@ -420,6 +421,10 @@ export default function NewWeek(){
                 <Row tag="h4">
                     <Col>Kassenfehlbetrag:</Col>
                     <Col style={{color: returnColor(reg_missing * -1), textAlign:"right"}}>{reg_missing}€</Col>
+                </Row>
+                <Row tag="h4">
+                    <Col>Realer Profit:</Col>
+                    <Col style={{color: returnColor(reg_missing * -1), textAlign:"right"}}>{prof_act}</Col>
                 </Row>
             </div>
         );}catch{

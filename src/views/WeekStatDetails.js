@@ -1,13 +1,16 @@
 import axios from "axios";
+import { func } from "prop-types";
 import React, { useEffect, useState } from "react";
 import Moment from "react-moment";
-import { useLocation } from "react-router-dom";
-import { Card, CardBody, CardHeader, CardTitle, Col, Input, Row, Table } from "reactstrap";
+import { useHistory, useLocation } from "react-router-dom";
+import { Button, Card, CardBody, CardHeader, CardTitle, Col, Input, Row, Table } from "reactstrap";
 
 export default function(props) {
     const location = useLocation();
+    const history = useHistory();
     const id = localStorage.getItem("week_id")
     const jwt = localStorage.getItem("jwt")
+    const user = localStorage.getItem("username")
 
     const[weekData, setWeekData] = useState([]);
     const[supplyData, setSupplyData] = useState([]);
@@ -29,7 +32,7 @@ export default function(props) {
     }
 
     const getLastWeekData = async () => {
-        const response = await axios.post("http://178.254.2.54:5000/api/weekstats/single", {jwt, "id":id -=1})
+        const response = await axios.post("http://178.254.2.54:5000/api/weekstats/single", {jwt, "id":id -1})
         const js = await response.data;
         return js   
     }
@@ -47,8 +50,41 @@ export default function(props) {
         initData();
     }, [])
 
-    function updateMoney(){
-        
+    function goBack(){
+        history.push("/admin/weeks");
+    }
+
+    function updateWeekStat(value, key){
+        var newJSON = JSON.parse(JSON.stringify(weekData))
+        newJSON.week_stat[key] = value
+        setWeekData(newJSON)
+    }
+
+    function updateProduct(id, key, value){
+        var newJSON = JSON.parse(JSON.stringify(weekData))
+        newJSON.products.map(p => {
+            if(parseInt(p.product_id) === parseInt(id)){
+                p[key] = value
+            }
+        })
+        setWeekData(newJSON)
+    }
+
+    function saveWeek(){
+        var saveJSON = weekData
+        saveJSON.week_stat.author = user
+        saveJSON["jwt"] = jwt
+
+        async function pushWeekToServer(JS_Object){
+            const response = await axios.post("http://178.254.2.54:5000/api/weekstats/update", JS_Object)
+            const msg = await response.data
+            console.log(JSON.stringify(msg))
+            console.log(msg.error)
+            if(msg["error"] === false){
+                goBack();
+            }
+        }
+        pushWeekToServer(saveJSON)
     }
 
     function returnColor(value){
@@ -72,7 +108,7 @@ export default function(props) {
                     <Moment format="dd DD.MM.YYYY">{week["date_end"]}</Moment>
                 </Col>
                 <Col>
-                    <Input type="checkbox"  defaultChecked={week.was_regular}/>
+                    <Input type="checkbox"  defaultChecked={week.was_regular} onChange={e => updateWeekStat(e.target.checked, "was_regular")}/>
                 </Col>
             </Row>
         );}catch{
@@ -109,17 +145,17 @@ export default function(props) {
 
             var pcs_sold = p.stock_before + supply_count - p.stock_after - p.loss
             var sales = pcs_sold * p.sp
-            var profit = sales - (pcs_sold * p.pp)
+            var profit = sales - ((pcs_sold + p.loss) * p.pp) 
             return(
                 <tr key={p.id}>
                     <th>{p.name}</th>
                     <th>{p.stock_before}</th>
                     <th>{supply_count}</th>
-                    <th><input defaultValue={p.stock_after} class="form-control" type="number"/></th>
-                    <th><input defaultValue={p.loss} class="form-control" type="number"/></th>
+                    <th><input defaultValue={p.stock_after} class="form-control" type="number" onChange={e => updateProduct(p.product_id, "stock_after", parseInt(e.target.value))}/></th>
+                    <th><input defaultValue={p.loss} class="form-control" type="number" onChange={e => updateProduct(p.product_id, "loss", parseInt(e.target.value))}/></th>
                     <th>{pcs_sold}</th>
-                    <th><input defaultValue={p.pp} class="form-control" type="number"/></th>
-                    <th><input defaultValue={p.sp} class="form-control" type="number"/></th>
+                    <th><input defaultValue={p.pp} class="form-control" type="number" onChange={e => updateProduct(p.product_id, "pp", parseFloat(e.target.value))}/></th>
+                    <th><input defaultValue={p.sp} class="form-control" type="number" onChange={e => updateProduct(p.product_id, "sp", parseFloat(e.target.value))}/></th>
                     <th>{parseFloat(sales).toFixed(2)}</th>
                     <th>{parseFloat(profit).toFixed(2)}</th>
                 </tr>
@@ -203,6 +239,8 @@ export default function(props) {
             const reg_est = parseFloat(parseFloat(sales_ges) + parseFloat(coins_before) + parseFloat(bills_before)).toFixed(2)
             const reg_missing = parseFloat(reg_est - register_count).toFixed(2)
 
+            const prof_act = parseFloat(prof_ges - reg_missing).toFixed(2)
+
         return(
             <div>
                 <Row>
@@ -214,14 +252,14 @@ export default function(props) {
                 <Row>
                     <Col>Münzen</Col>
                     <Col>{parseFloat(coins_before).toFixed(2) || 0}€</Col>
-                    <Col><input class="form-control" type="number" defaultValue={parseFloat(reg_coins).toFixed(2)} onChange={e => updateMoney(e.target.value, "coins_register")}/></Col>
-                    <Col><input  class="form-control" type="number" defaultValue={0} onChange={e => updateMoney(e.target.value, "coins_transfer")}/></Col>
+                    <Col><input class="form-control" type="number" defaultValue={parseFloat(reg_coins).toFixed(2)} onChange={e => updateWeekStat(e.target.value, "coins_register")}/></Col>
+                    <Col><input  class="form-control" type="number" defaultValue={parseFloat(weekData.week_stat.coins_transfer).toFixed(2)} onChange={e => updateWeekStat(e.target.value, "coins_transfer")}/></Col>
                 </Row>
                 <Row>
                     <Col>Scheine</Col>
                     <Col>{parseFloat(bills_before).toFixed(2) || 0}€</Col>
-                    <Col><input  class="form-control" type="number" defaultValue={parseFloat(reg_bills).toFixed(2)} onChange={e => updateMoney(e.target.value, "bills_register")}/></Col>
-                    <Col><input  class="form-control"type="number" defaultValue={0} onChange={e => updateMoney(e.target.value, "bills_transfer")}/></Col>
+                    <Col><input  class="form-control" type="number" defaultValue={parseFloat(reg_bills).toFixed(2)} onChange={e => updateWeekStat(e.target.value, "bills_register")}/></Col>
+                    <Col><input  class="form-control"type="number" defaultValue={parseFloat(weekData.week_stat.bills_transfer).toFixed(2)} onChange={e => updateWeekStat(e.target.value, "bills_transfer")}/></Col>
                 </Row>
                 <Row></Row>
                 <Row tag="h4">
@@ -237,6 +275,10 @@ export default function(props) {
                     <Col>Kassenfehlbetrag:</Col>
                     <Col style={{color: returnColor(reg_missing * -1), textAlign:"right"}}>{reg_missing}€</Col>
                 </Row>
+                <Row tag="h4">
+                    <Col>Realer Profit:</Col>
+                    <Col style={{color: returnColor(prof_act), textAlign:"right"}}>{prof_act}</Col>
+                </Row>
             </div>
         )}catch{
 
@@ -246,6 +288,10 @@ export default function(props) {
 
     return (
         <div className="content">
+             <Button color="link" onClick={goBack}>                
+                <i className="tim-icons icon-double-left" />
+                Zurück
+            </Button>
             <Card className="headerCart">
                 <CardHeader>
                             <CardTitle tag="h1">Wochenstatistik #{id}</CardTitle>
@@ -312,6 +358,7 @@ export default function(props) {
                     {returnMoneyTable()}
                 </CardBody>
             </Card>
+            <Button onClick={() => saveWeek()}>Wochenstatistik speichern</Button>
         </div>
     )
 
