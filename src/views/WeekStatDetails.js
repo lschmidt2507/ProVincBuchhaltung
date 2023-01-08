@@ -87,6 +87,14 @@ export default function(props) {
         pushWeekToServer(saveJSON)
     }
 
+    async function deleteWeek(){
+        const response = await axios.post("http://178.254.2.54:5000/api/weekstats/delete", {"jwt":jwt, "id":id})
+        const msg = await response.data
+        if(msg["error"] === false){
+            goBack();
+        }
+    }
+
     function returnColor(value){
         if (value < 0) {
             return "red"
@@ -358,7 +366,10 @@ export default function(props) {
                     {returnMoneyTable()}
                 </CardBody>
             </Card>
+            <Row>
             <Button onClick={() => saveWeek()}>Wochenstatistik speichern</Button>
+            <Button onClick={() => deleteWeek()}>Wochenstatistik löschen</Button>
+            </Row>
         </div>
     )
 

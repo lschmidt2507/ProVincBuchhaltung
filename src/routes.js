@@ -29,6 +29,7 @@ import Login from "views/LoginPage.js";
 import Deliveries from "./views/Deliveries";
 import WeekStatDetailS from "./views/WeekStatDetails";
 import Stock from "./views/stock.js"
+import newSup from "./views/newSup";
 
 var routes = [
   {
@@ -47,7 +48,7 @@ var routes = [
     icon: "tim-icons icon-atom",
     component: Icons,
     layout: "/admin",
-    showInSideBar: true
+    showInSideBar: false
   },
   {
     path: "/weeks",
@@ -74,7 +75,7 @@ var routes = [
     icon: "tim-icons icon-single-02",
     component: UserProfile,
     layout: "/admin",
-    showInSideBar: true
+    showInSideBar: false
   },
   {
     path: "/tables",
@@ -92,7 +93,7 @@ var routes = [
     icon: "tim-icons icon-align-center",
     component: Typography,
     layout: "/admin",
-    showInSideBar: true
+    showInSideBar: false
   },
   {
     path: "/rtl-support",
@@ -132,6 +133,13 @@ var routes = [
     component: Stock,
     layout: "/admin",
     showInSideBar: true
+  },
+  {
+    path: "/newSupply",
+    name: "Neuer Wareneingang",
+    component: newSup,
+    layout: "/admin",
+    showInSideBar: false
   }
 ];
 export default routes;

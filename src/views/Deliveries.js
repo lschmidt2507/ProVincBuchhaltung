@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardBody, CardHeader, CardTitle, Col, Row, Table } from "reactstrap";
+import { Button, Card, CardBody, CardHeader, CardTitle, Col, Row, Table } from "reactstrap";
 import axios from "axios";
 import Moment from "react-moment";
+import { useHistory } from "react-router-dom";
 
-export default function () {
+export default function Deliveries() {
 
 const [deliveries, setDeliveries] = useState([]);
 const jwt = localStorage.getItem("jwt")
+const history = useHistory()
 
 const getDeliveryData = async () => {
     const response = await axios.post("http://178.254.2.54:5000/api/supply/all", {jwt})
@@ -15,24 +17,30 @@ const getDeliveryData = async () => {
     return js_parsed
 }
 
-useEffect( ()=> {
+useEffect(()=> {
     async function initData(){
         const data = await getDeliveryData();
         setDeliveries(data)
     }
     initData();
 
-})
+}, [])
+
+function pushToNewSup(){
+    history.push("/admin/newSupply")
+}
 
 function returnSupplyTable(){
-    return deliveries.map( supply => {
+    const sup = deliveries || []
+    return sup.map( supply => {
         return(
-            <tr>
+            <tr key={supply.id}>
                 <th><Moment format="dd DD.MM.YYYY">{supply.supplyDate}</Moment></th>
-                <th>{supply.product_id}</th>
+                <th>{supply.product_name}</th>
                 <th>{supply.amount}</th>
-                <th>{supply.mhd}</th>
+                <th><Moment format="dd DD.MM.YYYY">{supply.mhd}</Moment></th>
                 <th>{supply.author}</th>
+                <th><Button style={{color:"red"}}><i className="tim-icons icon-simple-delete" /></Button></th>
             </tr>
         )
     })
@@ -56,6 +64,9 @@ return(
                     <Col md="auto">
                     <CardTitle tag="h3">Historie</CardTitle>
                     </Col>
+                    <Col>
+                    <Button onClick={() => pushToNewSup()}>Neuer Wareneingang</Button>
+                    </Col>
                     </Row>
                 </CardHeader>
                 <CardBody>
@@ -67,6 +78,7 @@ return(
                                 <th>Anzahl</th>
                                 <th>MHD</th>
                                 <th>Geprüft durch</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
