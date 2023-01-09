@@ -30,7 +30,8 @@ import Deliveries from "./views/Deliveries";
 import WeekStatDetailS from "./views/WeekStatDetails";
 import Stock from "./views/stock.js"
 import newSup from "./views/newSup";
-import Order from "views/order.js"
+import Order from "views/order.js";
+import TempDashboard from "./views/TempDashboard";
 
 var routes = [
   {
@@ -38,7 +39,7 @@ var routes = [
     name: "Dashboard",
     rtlName: "لوحة القيادة",
     icon: "tim-icons icon-chart-pie-36",
-    component: Dashboard,
+    component: TempDashboard,
     layout: "/admin",
     showInSideBar: true
   },

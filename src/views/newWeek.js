@@ -21,6 +21,7 @@ export default function NewWeek(){
     const [allProducts, setAllProducts] = useState([])
     var [profHyp, setProfHyp] = useState()
     var [sales_act, setSalesAct] = useState()
+    const[stock, setStock] = useState()
     const jwt = localStorage.getItem("jwt")
 
 
@@ -56,6 +57,12 @@ export default function NewWeek(){
         return js
     }
 
+    const getStockData = async() =>{
+        const response = await axios.post("http://178.254.2.54:5000/api/scale/getstock", {jwt})
+        const js = await response.data;
+        return js
+    }
+
     const getProductsData = async() =>{
         const response = await axios.post("http://178.254.2.54:5000/api/weekstats/products", {jwt})
         const js = await response.data;
@@ -64,12 +71,20 @@ export default function NewWeek(){
 
     function getProdJson(JS_before){
         const newProdJSON = allProducts.map(product => {
+            const sto = stock.products || []
             var s_before = 0
+            var s_after = 0
             JS_before.map(p => {
+                console.log(p.product_id + product.id)
                 if(p.product_id === product.id){
                     s_before = p.stock_before
                     console.log("JS in Map: " + JSON.stringify(p))
                     console.log("s_before: " + s_before)
+                }
+            })
+            sto.map(sto =>{
+                if(sto.product_id === product.id){
+                    s_after = sto.amount
                 }
             })
             console.log("Name: " + product.name)
@@ -77,7 +92,7 @@ export default function NewWeek(){
                 "product_id":product.id,
                 "name":product.name,
                 "stock_before": s_before,
-                "stock_after":s_before,
+                "stock_after":s_after,
                 "loss":0,
                 "pp":product.pp,
                 "sp":product.sp
@@ -90,8 +105,12 @@ export default function NewWeek(){
     useEffect(() => {
         console.log("IN USE EFFECT")
         async function initData(){
+            const prod = await getProductsData()
+            await setAllProducts(prod)
             const res = await getLastWeekStatData()
-            setLastWeek(res)
+            await setLastWeek(res)
+            const s = await getStockData()
+            await setStock(s)
 
             var js_clone = JSON.parse(JSON.stringify(res))
 
@@ -112,13 +131,12 @@ export default function NewWeek(){
             js_clone.week_stat.coins_transfer = 0
             js_clone.week_stat.bills_transfer = 0
 
-            const prod = await getProductsData()
-            setAllProducts(prod)
 
             js_clone.products = getProdJson(js_clone.products)
-            setWeekJSON(js_clone)
+            await setWeekJSON(js_clone)
             const supRes = await getSupplyData()
-            setUnassignedSupply(supRes)
+            await setUnassignedSupply(supRes)
+
 
 
             console.log("week after set:" + JSON.stringify(weekJSON))
@@ -212,7 +230,6 @@ export default function NewWeek(){
         var supIDs = []
         try{
         newJS.products.map(product =>{
-            console.log(parseInt(product.product_id), parseInt(id))
 
             if(parseInt(product.product_id) === parseInt(id)){
                 console.log("FOUND")
@@ -326,6 +343,7 @@ export default function NewWeek(){
         const products = allProducts || []
         const weekProds = weekJSON["products"]|| []
         const supplies = unassignedSupply.supplies || []
+        const st = stock || []
         return products.map(product => {
 
             var supplyCount = 0
@@ -358,7 +376,7 @@ export default function NewWeek(){
                     <td>{product["name"]}</td>
                     <td>{s_before || 0}</td>
                     <td>{supplyCount}</td>
-                    <td><input  class="form-control" type="number" defaultValue={s_before} style={{width: "80px"}} onChange={e => updateValue(product.id, "stock_after", e.target.value)}/></td>
+                    <td>{s_after}</td>
                     <td><input  class="form-control" type="number" defaultValue={0} style={{width: "80px"}} onChange={e => updateValue(product.id, "loss", e.target.value)}/></td>
                     <td>{pcs_sold}</td>
                     <td><input  class="form-control" type="number" defaultValue={parseFloat(product["pp"]).toFixed(3)} style={{width: "80px"}} onChange={e => updateValue(product.id, "pp", e.target.value)}/></td>

@@ -30,6 +30,14 @@ function pushToNewSup(){
     history.push("/admin/newSupply")
 }
 
+function deleteSupply(id){
+    async function pushToServer(){
+        const response = await axios.post("http://178.254.2.54:5000/api/supply/delete", {jwt, id})
+        history.push("/admin/deliveries")
+    }
+    pushToServer()
+}
+
 function returnSupplyTable(){
     const sup = deliveries || []
     return sup.map( supply => {
@@ -40,7 +48,7 @@ function returnSupplyTable(){
                 <th>{supply.amount}</th>
                 <th><Moment format="dd DD.MM.YYYY">{supply.mhd}</Moment></th>
                 <th>{supply.author}</th>
-                <th><Button style={{color:"red"}}><i className="tim-icons icon-simple-delete" /></Button></th>
+                <th><Button onClick={() => deleteSupply(supply.id)} style={{color:"red"}}><i className="tim-icons icon-simple-delete" /></Button></th>
             </tr>
         )
     })
