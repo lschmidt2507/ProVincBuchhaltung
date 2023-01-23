@@ -69,9 +69,9 @@ export default function NewWeek(){
         return js
     }
 
-    function getProdJson(JS_before){
-        const newProdJSON = allProducts.map(product => {
-            const sto = stock.products || []
+    function getProdJson(JS_before, products, stocks){
+        const newProdJSON = products.map(product => {
+            const sto = stocks.products || []
             var s_before = 0
             var s_after = 0
             JS_before.map(p => {
@@ -106,11 +106,11 @@ export default function NewWeek(){
         console.log("IN USE EFFECT")
         async function initData(){
             const prod = await getProductsData()
-            await setAllProducts(prod)
+            setAllProducts(prod)
             const res = await getLastWeekStatData()
-            await setLastWeek(res)
+            setLastWeek(res)
             const s = await getStockData()
-            await setStock(s)
+            setStock(s)
 
             var js_clone = JSON.parse(JSON.stringify(res))
 
@@ -132,12 +132,10 @@ export default function NewWeek(){
             js_clone.week_stat.bills_transfer = 0
 
 
-            js_clone.products = getProdJson(js_clone.products)
-            await setWeekJSON(js_clone)
+            js_clone.products = getProdJson(js_clone.products, prod, s)
+            setWeekJSON(js_clone)
             const supRes = await getSupplyData()
-            await setUnassignedSupply(supRes)
-
-
+            setUnassignedSupply(supRes)
 
             console.log("week after set:" + JSON.stringify(weekJSON))
 
