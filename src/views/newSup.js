@@ -14,6 +14,7 @@ export default function NewSup(){
 
     const[products, setProducts] = useState([]);
     var[supply, setSupply] = useState([]);
+    var[file, setFile] = useState([]);
     const today = new Date
 
     const getAllProducts = async () =>{
@@ -40,6 +41,10 @@ export default function NewSup(){
         }
         initData()
     }, [])
+
+    function updateFile(f){
+        setFile(f)
+    }
 
     function goBack(){
         history.push("/admin/deliveries");
@@ -78,9 +83,12 @@ export default function NewSup(){
 
     function saveSupply(){
         console.log("Products: " + JSON.stringify(supply))
+        if (file === null){
+            return;
+        }
         var saveJSON = {
             "jwt":jwt,
-            //"file":null,
+            "file":file,
             "products":supply
         }
         async function pushDataToServer(JS_Object){
@@ -136,10 +144,16 @@ export default function NewSup(){
                     <Col>
                     Eingangsdatum:
                     </Col>
+                    <Col>
+                    Lieferschein:
+                    </Col>
                 </Row>
                 <Row tag="h4">
                     <Col>
                         <ReactDatePicker selected={today} dateFormat="dd.MM.yyyy"></ReactDatePicker>
+                    </Col>
+                    <Col>
+                        <input type="file" onChange={e => updateFile(e.target.files)}/>
                     </Col>
                 </Row>
                 </CardHeader>

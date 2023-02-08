@@ -2,6 +2,7 @@ import react, { useState } from "react"
 import { useHistory } from "react-router-dom"
 import { Button, Card, CardBody, CardHeader, Col, Row } from "reactstrap"
 import axios from "axios"
+import logo from "assets/img/provinc-logo.png";
 
 axios.defaults.withCredentials = true
 
@@ -45,26 +46,28 @@ export default function (props) {
     }
 
     return (
-        <Card>
-            <CardHeader tag="h1">Login</CardHeader>
-            <CardBody>
-                <Row>
-                    <Col>Benutzername:</Col>
-                    <Col>
-                    <input className="usernameInput form-control" onChange={e => setUsername(e.target.value)}/>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>Passwort:</Col>
-                    <Col><input type="password" className="passwordInput form-control" onChange={e => setPassword(e.target.value)}/></Col>
-                </Row>
-                <Row>
-                    <Col/>
-                    <Col>
-                        <Button onClick={tryLogin}>Anmelden</Button>
-                    </Col>
-                </Row>
-            </CardBody>
-        </Card>
+        <div className="Auth-form-container">
+        <form className="Auth-form">
+          <div className="Auth-form-content">
+          <div className="logo">
+            <Col>
+            <img src={logo}/>
+            </Col>
+        </div>
+            <Row>
+                <Col>Benutzername</Col>
+                <Col><input className="usernameInput form-control" onChange={e => setUsername(e.target.value)}/></Col>
+            </Row>
+            <Row>
+                <Col>Passwort</Col>
+                <Col><input className="passwordInput form-control" type="password" onChange={e => setPassword(e.target.value)}/></Col>
+            </Row>
+            <Row>
+                <Col></Col>
+                <Col><Button onClick={tryLogin}>Login</Button></Col>
+            </Row>
+          </div>
+        </form>
+      </div>
     )
   }
