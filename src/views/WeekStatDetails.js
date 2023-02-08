@@ -20,19 +20,19 @@ export default function(props) {
     
 
     const getWeekData = async () => {
-        const response = await axios.post("http://178.254.2.54:5000/api/weekstats/single", {jwt, id})
+        const response = await axios.post("https://b.vlg-std.de:5000/api/weekstats/single", {jwt, id})
         const js = await response.data;
         return js   
     }
 
     const getSupplyData = async () => {
-        const response = await axios.post("http://178.254.2.54:5000/api/supply/ws_id", {jwt, "ws_id":id})
+        const response = await axios.post("https://b.vlg-std.de:5000/api/supply/ws_id", {jwt, "ws_id":id})
         const js = await response.data;
         return js   
     }
 
     const getLastWeekData = async () => {
-        const response = await axios.post("http://178.254.2.54:5000/api/weekstats/single", {jwt, "id":id -1})
+        const response = await axios.post("https://b.vlg-std.de:5000/api/weekstats/single", {jwt, "id":id -1})
         const js = await response.data;
         return js   
     }
@@ -76,7 +76,7 @@ export default function(props) {
         saveJSON["jwt"] = jwt
 
         async function pushWeekToServer(JS_Object){
-            const response = await axios.post("http://178.254.2.54:5000/api/weekstats/update", JS_Object)
+            const response = await axios.post("https://b.vlg-std.de:5000/api/weekstats/update", JS_Object)
             const msg = await response.data
             console.log(JSON.stringify(msg))
             console.log(msg.error)
@@ -88,7 +88,7 @@ export default function(props) {
     }
 
     async function deleteWeek(){
-        const response = await axios.post("http://178.254.2.54:5000/api/weekstats/delete", {"jwt":jwt, "id":id})
+        const response = await axios.post("https://b.vlg-std.de:5000/api/weekstats/delete", {"jwt":jwt, "id":id})
         const msg = await response.data
         if(msg["error"] === false){
             goBack();
@@ -232,50 +232,58 @@ export default function(props) {
             prof_ges += profit
 
         })
-
-
-            const coins_before =  parseFloat(lastWeek.week_stat.coins_register - lastWeek.week_stat.coins_transfer).toFixed(2)
-            const bills_before = parseFloat(lastWeek.week_stat.bills_register - lastWeek.week_stat.bills_transfer).toFixed(2)
+            const coins_before =  parseFloat(lastWeek.week_stat.coins_register).toFixed(2)
+            const bills_before = parseFloat(lastWeek.week_stat.bills_register).toFixed(2)
+            const other_before = parseFloat(lastWeek.week_stat.other_money).toFixed(2)
 
 
             var register_count = parseFloat(weekData.week_stat.bills_register)
             register_count += parseFloat(weekData.week_stat.coins_register)
+            register_count += parseFloat(weekData.week_stat.other_money)
             const reg_coins = weekData.week_stat.coins_register
             const reg_bills = weekData.week_stat.bills_register
+            const reg_other = weekData.week_stat.other_money
+            const transfer = weekData.week_stat.transfer
 
 
-            const reg_est = parseFloat(parseFloat(sales_ges) + parseFloat(coins_before) + parseFloat(bills_before)).toFixed(2)
+            const reg_est = parseFloat(parseFloat(sales_ges) + parseFloat(coins_before) + parseFloat(bills_before)+parseFloat(other_before)-parseFloat(transfer)).toFixed(2)
             const reg_missing = parseFloat(reg_est - register_count).toFixed(2)
-
             const prof_act = parseFloat(prof_ges - reg_missing).toFixed(2)
 
         return(
             <div>
-                <Row>
+                <Row tag="h4">
                     <Col></Col>
-                    <Col>Vorher in €</Col>
-                    <Col>Nachher in €</Col>
-                    <Col>Transfer in €</Col>
+                    <Col>letzte WS in €</Col>
+                    <Col>Jetzt in €</Col>
                 </Row>
-                <Row>
+                <Row tag="h4">
                     <Col>Münzen</Col>
                     <Col>{parseFloat(coins_before).toFixed(2) || 0}€</Col>
                     <Col><input class="form-control" type="number" defaultValue={parseFloat(reg_coins).toFixed(2)} onChange={e => updateWeekStat(e.target.value, "coins_register")}/></Col>
-                    <Col><input  class="form-control" type="number" defaultValue={parseFloat(weekData.week_stat.coins_transfer).toFixed(2)} onChange={e => updateWeekStat(e.target.value, "coins_transfer")}/></Col>
                 </Row>
-                <Row>
+                <Row tag="h4">
                     <Col>Scheine</Col>
                     <Col>{parseFloat(bills_before).toFixed(2) || 0}€</Col>
                     <Col><input  class="form-control" type="number" defaultValue={parseFloat(reg_bills).toFixed(2)} onChange={e => updateWeekStat(e.target.value, "bills_register")}/></Col>
-                    <Col><input  class="form-control"type="number" defaultValue={parseFloat(weekData.week_stat.bills_transfer).toFixed(2)} onChange={e => updateWeekStat(e.target.value, "bills_transfer")}/></Col>
+                </Row>
+                <Row tag="h4">
+                    <Col>Im Lager</Col>
+                    <Col>{parseFloat(other_before).toFixed(2) || 0}€</Col>
+                    <Col><input  class="form-control" type="number" defaultValue={parseFloat(reg_other).toFixed(2)} onChange={e => updateWeekStat(e.target.value, "other_money")}/></Col>
+                </Row>
+                <Row tag="h4">
+                    <Col>Transfer</Col>
+                    <Col></Col>
+                    <Col><input  class="form-control" type="number" defaultValue={parseFloat(0).toFixed(2)} onChange={e => updateWeekStat(e.target.value, "transfer")}/></Col>
                 </Row>
                 <Row></Row>
                 <Row tag="h4">
-                    <Col>Kassenstand real:</Col>
+                    <Col>Gesamtbestand real:</Col>
                     <Col style={{textAlign:"right"}}>{parseFloat(register_count).toFixed(2)}€</Col>
                 </Row>
                 <Row tag="h4">
-                    <Col>Kassenstand soll:</Col>
+                    <Col>Gesamtbestand soll:</Col>
                     <Col style={{textAlign:"right"}}>{reg_est}€</Col>
                     
                 </Row>
@@ -285,11 +293,13 @@ export default function(props) {
                 </Row>
                 <Row tag="h4">
                     <Col>Realer Profit:</Col>
-                    <Col style={{color: returnColor(prof_act), textAlign:"right"}}>{prof_act}</Col>
+                    <Col style={{color: returnColor(reg_missing * -1), textAlign:"right"}}>{prof_act}</Col>
                 </Row>
             </div>
-        )}catch{
-
+        );}catch{
+            return(
+                <div></div>
+            )
         }
         
     }

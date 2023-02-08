@@ -8,7 +8,6 @@ axios.defaults.withCredentials = true
 
 
 export default function (props) {
-    console.log("Login Page try to load")
     const history = useHistory();
     const [username, setUsername] = useState([]);
     const [password, setPassword] = useState([]);
@@ -16,12 +15,10 @@ export default function (props) {
 
     async function getPost(route, body){
         try{
-            const response = await axios.post("http://178.254.2.54:5000/api/" + route, body, {withCredentials: true})
+            const response = await axios.post("https://b.vlg-std.de:5000/api/" + route, body, {withCredentials: true})
             const js = await response.data
             const jwt = js["accessToken"]
             const headers = response.config
-            console.log("Jwt: " +   JSON.stringify(jwt))
-            console.log("Headers: " + JSON.stringify(headers))
             localStorage.setItem("jwt", jwt);
             return js
         }catch(error){
@@ -36,7 +33,7 @@ export default function (props) {
             password: password
         }
         var loginRes = await getPost("auth/login", body)
-        console.log("loginRes:" + loginRes)
+        console.log(loginRes)
         if(loginRes["error"] === false){
             var token = localStorage.getItem('token')
             localStorage.setItem("username", username)
@@ -54,12 +51,12 @@ export default function (props) {
                 <Row>
                     <Col>Benutzername:</Col>
                     <Col>
-                    <input className="usernameInput" onChange={e => setUsername(e.target.value)}/>
+                    <input className="usernameInput form-control" onChange={e => setUsername(e.target.value)}/>
                     </Col>
                 </Row>
                 <Row>
                     <Col>Passwort:</Col>
-                    <Col><input type="password" className="passwordInput" onChange={e => setPassword(e.target.value)}/></Col>
+                    <Col><input type="password" className="passwordInput form-control" onChange={e => setPassword(e.target.value)}/></Col>
                 </Row>
                 <Row>
                     <Col/>

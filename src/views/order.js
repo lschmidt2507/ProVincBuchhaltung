@@ -15,7 +15,7 @@ export default function Order(){
     const [orderRecommendations, setOrderRecommendations] = useState([])
 
     const getOrderData = async() =>{
-        const response = await axios.post("http://178.254.2.54:5000/api/scale/orders", {jwt})
+        const response = await axios.post("https://b.vlg-std.de:5000/api/scale/orders", {jwt})
         const js = await response.data;
         return js
     }

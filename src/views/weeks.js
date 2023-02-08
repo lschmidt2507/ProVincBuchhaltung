@@ -23,7 +23,7 @@ export default function Weeks(){
     }
 
     const getLastWeeks = async () => {
-        const response = await axios.post("http://178.254.2.54:5000/api/weekstats/all", {jwt})
+        const response = await axios.post("https://b.vlg-std.de:5000/api/weekstats/all", {jwt})
         const js = await response.data;
         const js_parsed = js["week_stats"].reverse()          
         return js_parsed

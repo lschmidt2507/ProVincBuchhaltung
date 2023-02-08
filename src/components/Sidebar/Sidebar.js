@@ -66,7 +66,7 @@ function Sidebar(props) {
   async function checkAuth(){
   try{
     var jwt = localStorage.getItem('jwt')
-    const response = await axios.post("http://178.254.2.54:5000/api/auth/test", {jwt})
+    const response = await axios.post("https://b.vlg-std.de:5000/api/auth/test", {jwt})
     const js = await response.data;
   }catch(error){
       console.log("Error:" + error)

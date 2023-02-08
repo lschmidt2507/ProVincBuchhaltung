@@ -15,19 +15,19 @@ export default function Stock(){
     const [allProducts, setAllProducts] = useState([])
 
     async function getScale(productId){
-        const response = await axios.post("http://178.254.2.54:5000/api/scale/single", {"id":productId, jwt})
+        const response = await axios.post("https://b.vlg-std.de:5000/api/scale/single", {"id":productId, jwt})
         const js = await response.data
         return js["amount"]
     }
 
     async function sendStockData(products){
-        const response = await axios.post("http://178.254.2.54:5000/api/scale/setstock", {products, jwt})
+        const response = await axios.post("https://b.vlg-std.de:5000/api/scale/setstock", {products, jwt})
         const js = await response.data
         return js
     }
 
     const getProductsData = async() =>{
-        const response = await axios.post("http://178.254.2.54:5000/api/weekstats/products", {jwt})
+        const response = await axios.post("https://b.vlg-std.de:5000/api/weekstats/products", {jwt})
         const js = await response.data;
         js.map(product => {
             product["amount"]=0

@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import ReactDatePicker from "react-datepicker";
 import Moment from "react-moment";
 import { Card, CardBody, CardHeader, Row, Table, Col, Dropdown, Button } from "reactstrap";
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import { useHistory } from "react-router-dom";
 
 export default function NewSup(){
@@ -18,7 +17,7 @@ export default function NewSup(){
     const today = new Date
 
     const getAllProducts = async () =>{
-        const response = await axios.post("http://178.254.2.54:5000/api/weekstats/products", {jwt})
+        const response = await axios.post("https://b.vlg-std.de:5000/api/weekstats/products", {jwt})
         const js = await response.data;
         const js_parsed = js         
         return js_parsed
@@ -85,7 +84,7 @@ export default function NewSup(){
             "products":supply
         }
         async function pushDataToServer(JS_Object){
-            const response = await axios.post("http://178.254.2.54:5000/api/supply/new", JS_Object)
+            const response = await axios.post("https://b.vlg-std.de:5000/api/supply/new", JS_Object)
             const msg = await response.data
             console.log(JSON.stringify(msg))
             console.log(msg.error)

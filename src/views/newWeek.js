@@ -32,19 +32,19 @@ export default function NewWeek(){
     }
 
     async function pushNewWeekToServer(JS_Object){
-        const response = await axios.post("http://178.254.2.54:5000/api/weekstats/new", JS_Object)
+        const response = await axios.post("https://b.vlg-std.de:5000/api/weekstats/new", JS_Object)
         const msg = await response.data
         console.log(JSON.stringify(msg))
     }
 
     const getLastWeekStatData = async() => {
-        const response = await axios.post("http://178.254.2.54:5000/api/weekstats/last", {jwt})
+        const response = await axios.post("https://b.vlg-std.de:5000/api/weekstats/last", {jwt})
         const js = await response.data;
         const lastWeekRaw = js["week_stats"]
         const id = lastWeekRaw[0]["id"]
         console.log("js:" + js.stringify)
         console.log("ID: " + id)
-        const responseLastWeekDetail = await axios.post("http://178.254.2.54:5000/api/weekstats/single", {jwt, id})
+        const responseLastWeekDetail = await axios.post("https://b.vlg-std.de:5000/api/weekstats/single", {jwt, id})
         const js2 = await responseLastWeekDetail.data;
         const js_parsed = js2
         console.log("Return: " + js_parsed)
@@ -52,19 +52,19 @@ export default function NewWeek(){
     }
 
     const getSupplyData = async() =>{
-        const response = await axios.post("http://178.254.2.54:5000/api/supply/unassigned", {jwt})
+        const response = await axios.post("https://b.vlg-std.de:5000/api/supply/unassigned", {jwt})
         const js = await response.data;
         return js
     }
 
     const getStockData = async() =>{
-        const response = await axios.post("http://178.254.2.54:5000/api/scale/getstock", {jwt})
+        const response = await axios.post("https://b.vlg-std.de:5000/api/scale/getstock", {jwt})
         const js = await response.data;
         return js
     }
 
     const getProductsData = async() =>{
-        const response = await axios.post("http://178.254.2.54:5000/api/weekstats/products", {jwt})
+        const response = await axios.post("https://b.vlg-std.de:5000/api/weekstats/products", {jwt})
         const js = await response.data;
         return js
     }
@@ -128,8 +128,8 @@ export default function NewWeek(){
             js_clone.week_stat.coins_register = 0
             js_clone.week_stat.bills_register = 0
 
-            js_clone.week_stat.coins_transfer = 0
-            js_clone.week_stat.bills_transfer = 0
+            js_clone.week_stat.other_money = 0
+            js_clone.week_stat.transfer = 0
 
 
             js_clone.products = getProdJson(js_clone.products, prod, s)
@@ -260,6 +260,7 @@ export default function NewWeek(){
         setWeekJSON(newJS)
         setProfHyp(profges)
         setSalesAct(salesges)
+        console.log(salesges)
         setSupplyIDs(supIDs)
         //setWeekJSON(weekJSON)
         //productTable()
@@ -390,47 +391,58 @@ export default function NewWeek(){
 
         
         try{
-            const coins_before =  parseFloat(lastWeek.week_stat.coins_register - lastWeek.week_stat.coins_transfer).toFixed(2)
-            const bills_before = parseFloat(lastWeek.week_stat.bills_register - lastWeek.week_stat.bills_transfer).toFixed(2)
+            const coins_before =  parseFloat(lastWeek.week_stat.coins_register).toFixed(2)
+            const bills_before = parseFloat(lastWeek.week_stat.bills_register).toFixed(2)
+            const other_before = parseFloat(lastWeek.week_stat.other_money).toFixed(2)
 
 
             var register_count = parseFloat(weekJSON.week_stat.bills_register)
             register_count += parseFloat(weekJSON.week_stat.coins_register)
+            register_count += parseFloat(weekJSON.week_stat.other_money)
             const reg_coins = weekJSON.week_stat.coins_register
             const reg_bills = weekJSON.week_stat.bills_register
+            const reg_other = weekJSON.week_stat.other_money
+            const transfer = weekJSON.week_stat.transfer
 
 
-            const reg_est = parseFloat(parseFloat(sales_act) + parseFloat(coins_before) + parseFloat(bills_before)).toFixed(2)
+            const reg_est = parseFloat(parseFloat(sales_act) + parseFloat(coins_before) + parseFloat(bills_before)+parseFloat(other_before)-parseFloat(transfer)).toFixed(2)
             const reg_missing = parseFloat(reg_est - register_count).toFixed(2)
             const prof_act = parseFloat(profHyp - reg_missing).toFixed(2)
 
         return(
             <div>
-                <Row>
+                <Row tag="h4">
                     <Col></Col>
-                    <Col>Vorher in €</Col>
-                    <Col>Nachher in €</Col>
-                    <Col>Transfer in €</Col>
+                    <Col>letzte WS in €</Col>
+                    <Col>Jetzt in €</Col>
                 </Row>
-                <Row>
+                <Row tag="h4">
                     <Col>Münzen</Col>
                     <Col>{parseFloat(coins_before).toFixed(2) || 0}€</Col>
                     <Col><input class="form-control" type="number" defaultValue={parseFloat(reg_coins).toFixed(2)} onChange={e => updateMoney(e.target.value, "coins_register")}/></Col>
-                    <Col><input  class="form-control" type="number" defaultValue={0} onChange={e => updateMoney(e.target.value, "coins_transfer")}/></Col>
                 </Row>
-                <Row>
+                <Row tag="h4">
                     <Col>Scheine</Col>
                     <Col>{parseFloat(bills_before).toFixed(2) || 0}€</Col>
                     <Col><input  class="form-control" type="number" defaultValue={parseFloat(reg_bills).toFixed(2)} onChange={e => updateMoney(e.target.value, "bills_register")}/></Col>
-                    <Col><input  class="form-control"type="number" defaultValue={0} onChange={e => updateMoney(e.target.value, "bills_transfer")}/></Col>
+                </Row>
+                <Row tag="h4">
+                    <Col>Im Lager</Col>
+                    <Col>{parseFloat(other_before).toFixed(2) || 0}€</Col>
+                    <Col><input  class="form-control" type="number" defaultValue={parseFloat(reg_other).toFixed(2)} onChange={e => updateMoney(e.target.value, "other_money")}/></Col>
+                </Row>
+                <Row tag="h4">
+                    <Col>Transfer</Col>
+                    <Col></Col>
+                    <Col><input  class="form-control" type="number" defaultValue={parseFloat(0).toFixed(2)} onChange={e => updateMoney(e.target.value, "transfer")}/></Col>
                 </Row>
                 <Row></Row>
                 <Row tag="h4">
-                    <Col>Kassenstand real:</Col>
+                    <Col>Gesamtbestand real:</Col>
                     <Col style={{textAlign:"right"}}>{parseFloat(register_count).toFixed(2)}€</Col>
                 </Row>
                 <Row tag="h4">
-                    <Col>Kassenstand soll:</Col>
+                    <Col>Gesamtbestand soll:</Col>
                     <Col style={{textAlign:"right"}}>{reg_est}€</Col>
                     
                 </Row>

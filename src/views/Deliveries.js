@@ -11,7 +11,7 @@ const jwt = localStorage.getItem("jwt")
 const history = useHistory()
 
 const getDeliveryData = async () => {
-    const response = await axios.post("http://178.254.2.54:5000/api/supply/all", {jwt})
+    const response = await axios.post("https://b.vlg-std.de:5000/api/supply/all", {jwt})
     const js = await response.data;
     const js_parsed = js["supplies"].reverse()          
     return js_parsed
@@ -32,7 +32,7 @@ function pushToNewSup(){
 
 function deleteSupply(id){
     async function pushToServer(){
-        const response = await axios.post("http://178.254.2.54:5000/api/supply/delete", {jwt, id})
+        const response = await axios.post("https://b.vlg-std.de:5000/api/supply/delete", {jwt, id})
         history.push("/admin/deliveries")
     }
     pushToServer()
