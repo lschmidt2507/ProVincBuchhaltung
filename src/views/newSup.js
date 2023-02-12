@@ -14,6 +14,7 @@ export default function NewSup(){
 
     const[products, setProducts] = useState([]);
     var[supply, setSupply] = useState([]);
+    var[supplyDate, setSupplyDate] = useState();
     var[file, setFile] = useState([]);
     const today = new Date
 
@@ -25,6 +26,7 @@ export default function NewSup(){
     }
 
     useEffect(() =>{
+        setSupplyDate(today)
         const data = [{
             "product_id":5,
             "name":"Space Keks",
@@ -34,6 +36,7 @@ export default function NewSup(){
             "creation_date":today,
             "author":user
         }]
+        setSupplyDate = today
         setSupply(data)
         async function initData(){
             const product_data = await getAllProducts()
@@ -124,7 +127,7 @@ export default function NewSup(){
                     </select>
                     </th>
                     <th><input defaultValue={0} type="number" onChange={e => updateValue(supply.indexOf(s), "amount", e.target.value)}/></th>
-                    <th><ReactDatePicker selected={today} dateFormat="dd.MM.yyyy"></ReactDatePicker></th>
+                    <th><ReactDatePicker selected={Date.parse(s.mhd)} dateFormat="dd.MM.yyyy" onChange={e => updateValue(supply.indexOf(s), "mhd", e)}></ReactDatePicker></th>
                     <th><Button onClick={() => removeSupply(supply.indexOf(s))}>-</Button></th>
                 </tr>
             )
@@ -150,7 +153,7 @@ export default function NewSup(){
                 </Row>
                 <Row tag="h4">
                     <Col>
-                        <ReactDatePicker selected={today} dateFormat="dd.MM.yyyy"></ReactDatePicker>
+                        <ReactDatePicker selected={supplyDate} dateFormat="dd.MM.yyyy" onChange={e => setSupplyDate(e)}></ReactDatePicker>
                     </Col>
                     <Col>
                         <input type="file" onChange={e => updateFile(e.target.files)}/>
