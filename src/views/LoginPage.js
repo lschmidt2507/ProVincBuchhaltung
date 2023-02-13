@@ -2,7 +2,7 @@ import react, { useState } from "react"
 import { useHistory } from "react-router-dom"
 import { Button, Card, CardBody, CardHeader, Col, Row } from "reactstrap"
 import axios from "axios"
-import logo from "assets/img/provinc-logo.png";
+import logo from "assets/img/ProVincLogoSchrift.png";
 
 axios.defaults.withCredentials = true
 
