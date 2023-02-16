@@ -80,7 +80,23 @@ export default function NewSup(){
         setSupply(newJS)
     }
 
+    function updateProduct(index, id){
+        let newJS = JSON.parse(JSON.stringify(supply))
+        var name = ""
+        products.map(p => {
+            if (p.id === id){
+                name = p.name
+            }
+        }) 
+        newJS[index]["product_id"] = id
+        newJS[index]["name"] = name
+        setSupply(newJS)
+    }
+
     function saveSupply(){
+        supply.map(s => {
+            s["supply_date"] = supplyDate
+        })
         console.log("Products: " + JSON.stringify(supply))
         var saveJSON = {
             "jwt":jwt,
@@ -115,7 +131,7 @@ export default function NewSup(){
             return(
                 <tr>
                     <th>
-                    <select>
+                    <select onChange={e =>  updateProduct(supply.indexOf(s), e.target.value)}>
                         {options()}
                     </select>
                     </th>

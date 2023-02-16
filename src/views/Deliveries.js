@@ -34,6 +34,7 @@ function deleteSupply(id){
     async function pushToServer(){
         const response = await axios.post("https://b.vlg-std.de:5000/api/supply/delete", {jwt, id})
         history.push("/admin/deliveries")
+        window.location.reload();
     }
     pushToServer()
 }
