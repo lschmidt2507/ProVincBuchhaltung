@@ -38,19 +38,30 @@ import {
   NavbarToggler,
   ModalHeader
 } from "reactstrap";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
-
+var username = ""
 
 function AdminNavbar(props) {
+
+  const history = useHistory()
+
   function logOut(){
     localStorage.clear();
     window.location.href = '/';
+  }
+
+  function pushToChangePassword(){
+    history.push("/admin/user-profile")
   }
   
   const [collapseOpen, setcollapseOpen] = React.useState(false);
   const [modalSearch, setmodalSearch] = React.useState(false);
   const [color, setcolor] = React.useState("navbar-transparent");
   React.useEffect(() => {
+
+    username = localStorage.getItem("username")
+
     window.addEventListener("resize", updateColor);
     // Specify how to clean up after this effect:
     return function cleanup() {
@@ -112,15 +123,16 @@ function AdminNavbar(props) {
                   nav
                   onClick={(e) => e.preventDefault()}
                 >
-                  <div className="photo">
-                    <img alt="..." src={require("assets/img/anime3.png")} />
+                  <div style={{marginRight:"38px", marginTop:"7px"}}>
+                    Angemeldet als: {username}
                   </div>
                   <b className="caret d-none d-lg-block d-xl-block" />
-                  <p className="d-lg-none">Log out</p>
+                  
                 </DropdownToggle>
                 <DropdownMenu className="dropdown-navbar" right tag="ul">
                   <NavLink tag="li">
-                    <DropdownItem className="nav-item" onClick={e => logOut()}>Log out</DropdownItem>
+                    <DropdownItem className="nav-item" onClick={e => logOut()}>Abmelden</DropdownItem>
+                    <DropdownItem className="nav-item" onClick={e => pushToChangePassword()}>Benutzerkonto-Übersicht</DropdownItem>
                   </NavLink>
                 </DropdownMenu>
               </UncontrolledDropdown>

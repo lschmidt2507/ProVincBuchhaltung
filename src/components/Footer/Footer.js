@@ -19,13 +19,17 @@
 import React from "react";
 
 // reactstrap components
-import { Container, Nav, NavItem, NavLink } from "reactstrap";
+import { Container, Nav, NavItem, NavLink, Row } from "reactstrap";
 
 function Footer() {
   return (
     <footer className="footer">
       <Container fluid>
         <div className="copyright">
+          <Row>
+            Version 1.0.1
+          </Row>
+          <Row>
           © {new Date().getFullYear()} erstellt von{" "}
           <a
             href="https://twitter.com/leinoes"
@@ -43,6 +47,7 @@ function Footer() {
           für die Schülerfirma {" "}
           <i className="tim-icons icon-check-2" />{" "}
           ProVinc
+          </Row>
         </div>
       </Container>
     </footer>

@@ -32,6 +32,7 @@ import Stock from "./views/stock.js"
 import newSup from "./views/newSup";
 import Order from "views/order.js";
 import TempDashboard from "./views/TempDashboard";
+import ChangePassword from "./views/ChangePassword";
 
 var routes = [
   {
@@ -72,7 +73,7 @@ var routes = [
   },
   {
     path: "/user-profile",
-    name: "User Profile",
+    name: "Benutzerkontenübersicht",
     rtlName: "ملف تعريفي للمستخدم",
     icon: "tim-icons icon-single-02",
     component: UserProfile,
@@ -150,6 +151,13 @@ var routes = [
     component: Order,
     layout: "/admin",
     showInSideBar: true
+  },
+  {
+    path: "/changePassword",
+    name: "Passwort ändern",
+    component: ChangePassword,
+    layout: "/admin",
+    showInSideBar: false
   }
 ];
 export default routes;

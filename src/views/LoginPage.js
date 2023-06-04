@@ -51,16 +51,16 @@ export default function (props) {
           <div className="Auth-form-content">
           <div className="logo">
             <Col>
-            <img src={logo}/>
+            <img src={logo} style={{margin:"15px"}}/>
             </Col>
         </div>
             <Row>
-                <Col>Benutzername</Col>
-                <Col><input className="usernameInput form-control" onChange={e => setUsername(e.target.value)}/></Col>
+                <Col>Benutzername:</Col>
+                <Col><input  onChange={e => setUsername(e.target.value)}/></Col>
             </Row>
             <Row>
-                <Col>Passwort</Col>
-                <Col><input className="passwordInput form-control" type="password" onChange={e => setPassword(e.target.value)}/></Col>
+                <Col>Passwort:</Col>
+                <Col><input type="password" onChange={e => setPassword(e.target.value)}/></Col>
             </Row>
             <Row>
                 <Col></Col>

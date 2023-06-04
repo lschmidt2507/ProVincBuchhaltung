@@ -2,11 +2,17 @@ import axios from "axios";
 import { func } from "prop-types";
 import React, { useEffect, useState } from "react";
 import ReactDatePicker from "react-datepicker";
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DateField, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import Moment from "react-moment";
 import { Card, CardBody, CardHeader, Row, Table, Col, Dropdown, Button } from "reactstrap";
 import { useHistory } from "react-router-dom";
+import { TextField, createTheme } from "@mui/material";
+import { de } from "date-fns/locale";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
-export default function NewSup(){
+export default function NewSup({children}){
 
     const jwt = localStorage.getItem("jwt")
     const user = localStorage.getItem("username")
@@ -127,18 +133,40 @@ export default function NewSup(){
     }
 
     function returnNewSupTable(){
+        const co = "#ffffff";
+        const theme = createTheme({
+            components:{
+                DatePicker:{
+                    defaultProps:{
+                        color: co
+                    }
+                }
+            }
+        })
         return supply.map(s =>{
             return(
                 <tr>
+                    
                     <th>
-                    <select onChange={e =>  updateProduct(supply.indexOf(s), e.target.value)}>
+                    <select className="form-control" onChange={e =>  updateProduct(supply.indexOf(s), e.target.value)}>
                         {options()}
                     </select>
                     </th>
-                    <th><input defaultValue={0} type="number" onChange={e => updateValue(supply.indexOf(s), "amount", e.target.value)}/></th>
-                    <th><ReactDatePicker selected={Date.parse(s.mhd)} dateFormat="dd.MM.yyyy" onChange={e => updateValue(supply.indexOf(s), "mhd", e)}></ReactDatePicker></th>
+                    <th><input className="form-control" defaultValue={0} type="number" onChange={e => updateValue(supply.indexOf(s), "amount", e.target.value)}/></th>
+                    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={de}>
+                    <th><DatePicker onChange={e => updateValue(supply.indexOf(s), "mhd", (new Date(e)).toISOString())}
+                    sx={{
+                        svg: { color: co },
+                        input: { color: co },
+                        label: {color: co}
+                      }}
+                    
+                    /></th>
+                    </LocalizationProvider>
                     <th><Button onClick={() => removeSupply(supply.indexOf(s))}>-</Button></th>
+                    
                 </tr>
+
             )
         })
     }
@@ -161,7 +189,18 @@ export default function NewSup(){
                 </Row>
                 <Row tag="h4">
                     <Col>
-                        <ReactDatePicker selected={supplyDate} dateFormat="dd.MM.yyyy" onChange={e => setSupplyDate(e)}></ReactDatePicker>
+                        
+                    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={de}>
+                    <th><DatePicker onChange={e => setSupplyDate(e)}
+                    format="dd.MM.yyyy"
+                    sx={{
+                        svg: { color: "#ffffff" },
+                        input: { color: "#ffffff" },
+                        label: {color: "#ffffff"}
+                      }}
+                    
+                    /></th>
+                    </LocalizationProvider>
                     </Col>
                     <Col>
                     </Col>
