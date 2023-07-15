@@ -58,6 +58,7 @@ export default function NewSup({children}){
     function updateValue(index, key, value){
         let newJS = JSON.parse(JSON.stringify(supply))
         console.log("INDEX-OBJ:" + JSON.stringify(newJS[index]))
+        console.log("VALUE: " + value)
         newJS[index][key] = value
         console.log("TRY:" + newJS[index][key])
         console.log(newJS)
@@ -123,6 +124,14 @@ export default function NewSup({children}){
 
     }
 
+    function DateDebugger(d){
+        console.log("Date: " + d)
+        console.log(new Date(d))
+        d = d.setHours(12)
+        console.log(d)
+        
+    }
+
     function options(){
         const prods = products || []
         return prods.map(p =>{
@@ -154,7 +163,10 @@ export default function NewSup({children}){
                     </th>
                     <th><input className="form-control" defaultValue={0} type="number" onChange={e => updateValue(supply.indexOf(s), "amount", e.target.value)}/></th>
                     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={de}>
-                    <th><DatePicker onChange={e => updateValue(supply.indexOf(s), "mhd", (new Date(e)).toISOString())}
+                    <th><DatePicker onChange={e => {
+                        DateDebugger(e)
+                        updateValue(supply.indexOf(s), "mhd", e.toISOString())}}
+                    format="dd.MM.yyyy"
                     sx={{
                         svg: { color: co },
                         input: { color: co },
@@ -191,7 +203,9 @@ export default function NewSup({children}){
                     <Col>
                         
                     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={de}>
-                    <th><DatePicker onChange={e => setSupplyDate(e)}
+                    <th><DatePicker onChange={e => {
+                    DateDebugger(e)
+                    setSupplyDate(e.toISOString())}}
                     format="dd.MM.yyyy"
                     sx={{
                         svg: { color: "#ffffff" },

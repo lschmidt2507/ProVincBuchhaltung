@@ -203,7 +203,6 @@ return(
                 </CardHeader>
                 <CardBody>
                     {returnSupplyTable()}
-                    {returnPagnationControl()}
                 </CardBody>
             </Card>
         </div>

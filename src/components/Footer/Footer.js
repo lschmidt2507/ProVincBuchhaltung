@@ -27,7 +27,7 @@ function Footer() {
       <Container fluid>
         <div className="copyright">
           <Row>
-            Version 1.0.1
+            Version 1.0.3
           </Row>
           <Row>
           © {new Date().getFullYear()} erstellt von{" "}
